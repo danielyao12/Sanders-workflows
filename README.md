@@ -20,8 +20,8 @@ pipeline. I recommend installing this in your `Fast` directory (`$FASTDIR`) in a
 sub-directory that is in your path (`$PATH`). Below is an example.
 
 ```{shell}
-$ mkdir -p $FASTDIR/bin            # Create the directory
-$ cd $FASTDIR/bin                  # Change into the directory
+$ mkdir -p $FASTDIR/bin                     # Create the directory
+$ cd $FASTDIR/bin                           # Change into the directory
 $ wget -qO- https://get.nextflow.io | bash  # Download Nextflow executable in the directory
 $ nextflow --help                           # Check that the installation worked
 ```
@@ -29,7 +29,7 @@ $ nextflow --help                           # Check that the installation worked
 To add Nextflow to your path, simply run the following code **once**
 
 ```{shell}
-$ echo "export PATH=$PATH:'$FASTDIR/bin'" >> ~/.bashrc
+$ echo export PATH=$PATH:$FASTDIR/bin >> ~/.bashrc
 ```
 
 This will append the `export` command to your `.bashrc` file which is sourced
