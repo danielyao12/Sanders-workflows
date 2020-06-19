@@ -3,7 +3,7 @@
 This repository contains `Nextflow` implementations of common workflows used by
 the Sanders research group. The current workflows I am looking to implement are:
 
-* [x] QC pipline
+* [x] QC pipeline
 * [x] Stacks (v2) pipeline
 * [ ] CodeML
 * [ ] Gene Capture
