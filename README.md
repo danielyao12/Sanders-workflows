@@ -55,4 +55,4 @@ with all the required scripts.
 
 ## Pipeline specifics
 
-Please visit the wiki for detailed information regarding each sub-workflow.
+Please visit the [wiki](https://github.com/a-lud/Sanders-workflows/wiki) for detailed information regarding each sub-workflow.

@@ -22,7 +22,7 @@ def help_message_main() {
             - trinity_pipeline: Assemble RNA-seq data into transcriptomes
 
         Required arguments: main.nf
-        -profile <str>                    WHich pipeline to run: slurm or standard
+        -profile <str>                    Which pipeline to run: slurm or standard
         -work-dir <pth>                   Pipelines temporary working directory
         --outdir <pth>                    Absolute path to output directory
         --lib_type <str>                  Single or paired end sequence data
