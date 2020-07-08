@@ -11,8 +11,8 @@ def empty_args_main_map() {
     // Instantiate required args
     args.outdir = false
     args.lib_type = false
-    args.fastq_dir = false
-    args.fastq_ext = false
+    args.seq_dir = false
+    args.seq_ext = false
     args.threads = false
     args.email = false
     args.sub_workflows = false
@@ -26,14 +26,14 @@ def check_args_main(Map args) {
     def final_args = [:]
 
     // Variables to build file paths
-    def fastq_dir = check_required_args_main(args, 'fastq_dir')
-    def fastq_ext = check_required_args_main(args, 'fastq_ext')
+    def seq_dir = check_required_args_main(args, 'seq_dir')
+    def seq_ext = check_required_args_main(args, 'seq_ext')
     def sub_workflows = check_required_args_main(args, 'sub_workflows')
 
     // Required arguments
     final_args.outdir = check_required_args_main(args, 'outdir')
     final_args.lib_type = check_required_args_main(args, 'lib_type')
-    final_args.reads = fastq_dir + '/' + fastq_ext
+    final_args.seqs = seq_dir + '/' + seq_ext
     final_args.threads = check_required_args_main(args, 'threads')
     
     // Check email is provided if profile == slurm

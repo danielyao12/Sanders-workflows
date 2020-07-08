@@ -58,11 +58,11 @@ workflow {
     Build channels of files - reads + map files
     */
 
-    // Get fastq files as tuple
+    // Get seq files as tuple
     Channel
-        .fromFilePairs(final_args['reads'], size: final_args['lib_type'] == 'paired' ? 2 : 1)
-        .ifEmpty { exit 1, "Cannot find any read files matching: ${final_args['reads']}"}
-        .set { reads }
+        .fromFilePairs(final_args['seqs'], size: final_args['lib_type'] == 'paired' ? 2 : 1)
+        .ifEmpty { exit 1, "Cannot find any read files matching: ${final_args['seqs']}"}
+        .set { seqs }
 
     // Get population map files
     if(final_args['sub_workflows'].contains('stacks_pipeline')){
@@ -79,18 +79,33 @@ workflow {
     // Load workflows
     include {qc_pipeline} from './lib/modules/qc_pipeline/workflows' params(final_args)
     include {stacks_pipeline} from './lib/modules/stacks_pipeline/workflows' params(final_args)
+    include {codeml_pipeline} from './lib/modules/codeml_pipeline/workflows' params(final_args)
 
     // Run QC pipeline
-    qc_pipeline(reads, final_args['sub_workflows'])
+    qc_pipeline(seqs, final_args['sub_workflows'])
 
-    // Reassign reads if trim has been specified
+    // Reassign seqs if trim has been specified
     if(final_args['trim']){
-        qc_pipeline.out.set { reads }
+        qc_pipeline.out.set { seqs }
     }
 
     // Run STACKS pipeline
-    stacks_pipeline(reads,
+    stacks_pipeline(seqs,
                     pop_maps,
+                    final_args['sub_workflows'])
+
+    // Run CodeML
+    /*
+    TO DO:
+        - Marks - create channel from list?
+            - or combine with seqs + tree + marks
+        - Check that the provided tests are in the selected models
+            - Doesn't need to be reciprocal
+            - If no models selected
+                - Check that the provided tests are all in the default models
+
+    */
+    codeml_pipeline(seqs,
                     final_args['sub_workflows'])
 
 }

@@ -26,8 +26,8 @@ def help_message_main() {
         -work-dir <pth>                   Pipelines temporary working directory
         --outdir <pth>                    Absolute path to output directory
         --lib_type <str>                  Single or paired end sequence data
-        --fastq_dir <str>                 Path to directory containing FASTQ files
-        --fastq_ext '<str>'               FASTQ file extension in quotes
+        --seq_dir <str>                   Path to directory containing sequence files
+        --seq_ext '<str>'                 Sequence file extension pattern in quotes
         --threads <int>                   Number of worker threads
         --sub_workflows                   Which sub-workflows to run
 
@@ -54,8 +54,8 @@ def help_message_main() {
             -work-dir \${FASTDIR}/sequence_project/work_dir \\
             --outdir \${FASTDIR}/sequence_project \\
             --lib_type paired \\
-            --fastq_dir \${FASTDIR}/sequence_project/fastq \\
-            --fastq_ext '*_{1,2}.fastq.gz' \\
+            --seq_dir \${FASTDIR}/sequence_project/fastq \\
+            --seq_ext '*_{1,2}.fastq.gz' \\
             --threads 4 \\
             --email a1234567@adelaide.edu.au \\
             --sub_workflows qc_pipeline,stacks_pipeline \\
