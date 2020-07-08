@@ -138,6 +138,41 @@ def help_message_stacks() {
     )
 }
 
+def help_message_codeml() {
+    println(
+        """
+        CodeML help page - ETE Evol implementation
+
+        This sub-workflow runs CodeML using the ETE-Evol implementation. This is
+        a tool that is a wrapper around CodeML, designed to make running muliple
+        models, genes and trees a breeze. For more help regarding how to run the
+        software check out: http://etetoolkit.org/documentation/ete-evol
+
+        Required arguments:
+        --trees <str>                       List of tree files to use in the analysis
+
+        Optional arguments:
+        --models <str>                      Quoted string of models to be run by codeml
+        --tests <str>                       Quoted string of model comparisons (e.g. 'M2,M1 M3,M0')
+        --mark <str>                        Quoted string of tree markings using ETE-Evol syntax
+        --leaves <str>                      Agument specifying if every leaf should be marked
+        --internals <str>                   Agument specifying if every node should be marked
+        --codeml_param <str>                Quoted string of extra parameters to pass to ETE-Evol
+
+        NOTE:
+            - By default a common default set of models and comparisons will be conducted
+            - Select ONE of `--mark`, `--leaves` or `--internals` but never more than ONE
+
+        Example command:
+        nextflow run main.nf \\
+            --sub_workflows codeml_pipeline \\
+            --trees /path/to/tree.nw,/path/to/tree.nw \\
+            --models 'M2,M1,M3,M0,bsA,bsA1' \\
+            --leaves
+        """.stripIndent()
+    )
+}
+
 // Return message on completion
 def complete_message(String version){
     // Display complete message

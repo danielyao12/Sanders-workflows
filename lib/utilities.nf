@@ -1,4 +1,4 @@
-include {version_message; help_message_main; help_message_qc; help_message_stacks} from './messages.nf'
+include {version_message; help_message_main; help_message_qc; help_message_stacks; help_message_codeml} from './messages.nf'
 
 // Help/version
 def help_or_version(Map args, String version){
@@ -20,6 +20,10 @@ def help_or_version(Map args, String version){
         help_message_stacks()
         System.exit(0)
 
+    } else if(args.help == 'codeml_pipeline') {
+        version_message(version)
+        help_message_codeml()
+        System.exit(0)
     }
 
     // Show version number
@@ -47,7 +51,8 @@ def check_required_args_main(Map args, String args_name){
 // Check the pipelines argument
 def check_subWorkflow_selection(String workflows) {
     def subWork = [ 'qc_pipeline', 
-                    'stacks_pipeline', 
+                    'stacks_pipeline',
+                    'codeml_pipeline',
                     'geneCap_pipeline', 
                     'varCall_pipeline', 
                     'transcriptome_pipeline' ]

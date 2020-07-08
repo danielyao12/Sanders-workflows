@@ -4,7 +4,7 @@ nextflow.preview.dsl=2
 version = '1.0'
 
 // Include helper functions here
-include {empty_args_main_map; check_args_main; check_args_QC; check_args_stacks} from './lib/params_parser'
+include {empty_args_main_map; check_args_main; check_args_QC; check_args_stacks; check_args_codeml} from './lib/params_parser'
 include {help_or_version} from './lib/utilities'
 
 // Argument parsing
@@ -28,6 +28,10 @@ checked_args['main_args'].putAll(qc_args)
 // Stacks arguments
 stacks_args = check_args_stacks(checked_args['usr_args'])
 checked_args['main_args'].putAll(stacks_args)
+
+// CodeML arguments
+codeml_args = check_args_codeml(checked_args['usr_args'])
+checked_args['main_args'].putAll(codeml_args)
 
 // Final arguments to use in pipeline
 final_args = checked_args['main_args']
