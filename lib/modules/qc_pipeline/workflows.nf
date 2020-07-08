@@ -15,7 +15,8 @@ workflow qc_pipeline {
     params.unpaired_file,
     params.failed_file,
     params.adapter_file,
-    params.trim)
+    params.trim,
+    params.fastp_optional)
 
     // Run fastqc trimmed data
     run_fastqc_trim(run_fastp.out.trimmed_reads,

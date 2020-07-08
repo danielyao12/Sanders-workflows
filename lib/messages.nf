@@ -82,11 +82,14 @@ def help_message_qc() {
         --detect_adapter              Fastp will automatically detect adapters
         --adapter_file                File path to adapter fasta file
 
+        Optional:
+        --fastp_optional              Quoted string of custom parameters for fastp
+
         NOTE: Arguments '--adapter_file' and '--detect_adapter' are mututally
         exclusive. You can't pass both arguments. 
 
-        Similarly, if you provide '--trim' but neither of the other two arguments
-        , the software will complain. 
+        Similarly, if you provide '--trim' but neither of the other two arguments,
+        the software will complain. 
         
         """.stripIndent()
     )

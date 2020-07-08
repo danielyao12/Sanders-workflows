@@ -14,6 +14,7 @@ process run_fastp {
         val failed_file
         val adapter_fasta
         val trim
+        val opt
 
     output:
         tuple id, file("trim/${id}*.gz"), emit: trimmed_reads
@@ -25,6 +26,8 @@ process run_fastp {
         trim == true && wf.contains('qc_pipeline')
 
     script:
+    def opt_args = opt ?: ''
+
     if(lib_type == 'paired')
         if(detect_adapter == true)
             """
@@ -39,7 +42,8 @@ process run_fastp {
             --failed_out ${failed_file} \
             --html ${id}.html \
             --json ${id}.json \
-            --thread ${task.cpus}
+            --thread ${task.cpus} \
+            ${opt_args}
             """
         else
             """
@@ -55,7 +59,8 @@ process run_fastp {
             --adapter_fasta ${adapter_fasta} \
             --html ${id}.html \
             --json ${id}.json \
-            --thread ${task.cpus}
+            --thread ${task.cpus} \
+            ${opt_args}
             """
     else if(lib_type == 'single')
         if(detect_adapter == true)
@@ -68,7 +73,8 @@ process run_fastp {
             --failed_out ${failed_file} \
             --html ${id}.html \
             --json ${id}.json \
-            --thread ${task.cpus}
+            --thread ${task.cpus} \
+            ${opt_args}
             """
         else
             """
@@ -82,7 +88,8 @@ process run_fastp {
             --adapter_fasta ${adapter_fasta} \
             --html ${id}.html \
             --json ${id}.json \
-            --thread ${task.cpus}
+            --thread ${task.cpus} \
+            ${opt_args}
             """
     else
         error "Invalid argument provided to ${detect_adapter}"

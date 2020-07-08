@@ -69,6 +69,7 @@ def empty_args_QC_map() {
     args.adapter_file = false
     args.unpaired_file = false
     args.failed_file = false
+    args.fastp_optional = false
 
     // Return map of empty arguments
     return args
@@ -96,12 +97,13 @@ def check_args_QC(Map args) {
         // Assign variables
         qc_args.adapter_file = args.adapter_file ?: false
         qc_args.detect_adapter = args.detect_adapter ?: false
+        qc_args.fastp_optional = args.fastp_optional ?: false
 
         // General arguments that are provided
         qc_args.unpaired_file = 'unpaired_reads.fastq.gz'
         qc_args.failed_file = 'failed_reads.fastq.gz'
 
-    } else if(!args.trim && args.detect_adapter || args.adapter_file){
+    } else if(!args.trim && args.detect_adapter || args.adapter_file || args.fastp_optional){
         println("ERROR: Trimming has not been selected but arguments relating to trimming have been provided. Check that 'detect_adapter' or 'adapter_file' has not been set")
         System.exit(1)
     }
