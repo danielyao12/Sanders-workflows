@@ -14,7 +14,7 @@ process run_codeml {
         val wf
 
     output:
-        file "${id}.txt"
+        file "*"
 
     when:
         wf.contains('codeml_pipeline')
