@@ -205,6 +205,7 @@ def empty_args_codeml_map() {
     args.leaves = false
     args.internals = false
     args.codeml_param = false
+    args.conda_env_path = false
 
     return args
     
@@ -236,6 +237,21 @@ def check_args_codeml(Map args) {
         'bsA1', 'bsC', 'bsD', 
         'b_free', 'b_neut' 
         ]
+
+    // Pre-built conda path
+    if(args.conda_env_path) {
+        
+        try {
+            File file = new File(args.conda_env_path)
+            assert file.exists()
+        } catch(AssertionError e) {
+            println("ERROR: Pre-built conda environment for CodeML doesn't exist " + 
+            args.conda_env_path + "\nError message: " + e.getMessage())
+        }
+
+        codeml_args.conda_env_path = args.conda_env_path
+
+    }
 
     // CodeML pipeline is requested
     if(args.sub_workflows.contains('codeml_pipeline') ){

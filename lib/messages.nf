@@ -154,6 +154,7 @@ def help_message_codeml() {
 
         Required arguments:
         --trees <str>                       List of tree files to use in the analysis
+        --conda_env_path <str>              Path to pre-created conda environment for ete-evol (see README)
 
         Optional arguments:
         --models <str>                      Quoted string of models to be run by codeml
