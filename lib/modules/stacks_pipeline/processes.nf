@@ -32,7 +32,7 @@ process run_cstacks {
 
     label 'stacks'
 
-    publishDir "${outdir}/stacks/02_outdir_${popMap.baseName}", mode: 'copy'
+    publishDir "${outdir}/stacks/comparison_${popMap.baseName}", mode: 'copy'
 
     input:
         val wf
@@ -41,7 +41,7 @@ process run_cstacks {
         val outdir
     
     output:
-        tuple popMap, val("${outdir}/stacks/02_outdir_${popMap.baseName}"), emit: pop_path
+        tuple popMap, val("${outdir}/stacks/comparison_${popMap.baseName}"), emit: pop_path
         file("*catalog*")
         file("*tsv*")
 
@@ -53,8 +53,8 @@ process run_cstacks {
         def opt_args = opt ?: ''
 
         """
-        mkdir -p ${outdir}/stacks/02_outdir_${popMap.baseName}
-        cp ${file_string} ${outdir}/stacks/02_outdir_${popMap.baseName}
+        mkdir -p ${outdir}/stacks/comparison_${popMap.baseName}
+        cp ${file_string} ${outdir}/stacks/comparison_${popMap.baseName}
         cstacks -p ${task.cpus} -o \${PWD} ${opt_args} ${sample_string}
         """
 
