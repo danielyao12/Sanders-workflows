@@ -75,6 +75,7 @@ terminal to add the required channels to your account.
 $ conda config --add channels r
 $ conda config --add channels anaconda
 $ conda config --add channels bioconda
+$ conda config --add channels etetoolkit
 $ conda config --add channels conda-forge
 ```
 
