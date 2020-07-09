@@ -89,9 +89,15 @@ workflow {
             .set {seqs_tree}
 
         // Create channel from list of marks
-        Channel
-            .fromList(final_args.mark)
-            .set {mark}
+        if(final_args.mark) {
+            Channel
+                .fromList(final_args.mark)
+                .set {mark}
+        } else {
+            Channel
+                .empty()
+                .set { mark }
+        }
 
         // Combine with seqs_tree
         seqs_tree
