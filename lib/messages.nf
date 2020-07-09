@@ -17,6 +17,7 @@ def help_message_main() {
 
             - qc_pipeline: Fastp/FastQC wrapper for sequence QC
             - stacks_pipeline: Run STACKS on RAD-seq data
+            - codeml_pipeline: Run CodeML using ETE-Evol
             - geneCap_pipeline: Get consensus gene models from gene-capture data
             - varCall_pipeline: Call variants against reference genomes
             - trinity_pipeline: Assemble RNA-seq data into transcriptomes

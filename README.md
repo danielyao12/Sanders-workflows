@@ -8,6 +8,7 @@ the Sanders research group. The current workflows I am looking to implement are:
 * [ ] CodeML
 * [ ] Gene Capture
 * [ ] Variant calling
+* [ ] Trinity pipeline
 
 If there are any other analyses that you are interested in having as a workflow,
 create an issue or message me and I'll look into implementing it.
@@ -102,3 +103,7 @@ If this information is there, then you are good to go.
 ## Pipeline specifics
 
 Please visit the [wiki](https://github.com/a-lud/Sanders-workflows/wiki) for detailed information regarding each sub-workflow.
+
+## Author
+
+Alastair Ludington: alastair.ludington@adelaide.edu.au
