@@ -94,6 +94,7 @@ you should see something like the following:
 ```{shell}
 channels:
   - conda-forge
+  - etetoolkit
   - bioconda
   - anaconda
   - r
