@@ -110,8 +110,6 @@ workflow {
             .set { seqs_tree_mark }
     }
 
-    seqs_tree_mark.view()
-
     // Load workflows
     include {qc_pipeline} from './lib/modules/qc_pipeline/workflows' params(final_args)
     include {stacks_pipeline} from './lib/modules/stacks_pipeline/workflows' params(final_args)
