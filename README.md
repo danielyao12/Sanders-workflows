@@ -74,6 +74,7 @@ tell conda where to look online when installing software. Run the following at t
 terminal to add the required channels to your account.
 
 ```{shell}
+$ module load Anaconda3
 $ conda config --add channels r
 $ conda config --add channels anaconda
 $ conda config --add channels bioconda
