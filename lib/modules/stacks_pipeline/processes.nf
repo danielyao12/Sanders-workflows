@@ -1,6 +1,8 @@
 process run_ustacks {
     tag { id }
 
+    label 'stacks'
+
     publishDir "${outdir}/stacks/01_ustacks", mode: 'copy'
 
     input:
@@ -27,6 +29,8 @@ process run_ustacks {
 
 process run_cstacks {
     tag { popMap.baseName }
+
+    label 'stacks'
 
     publishDir "${outdir}/stacks/02_outdir_${popMap.baseName}", mode: 'copy'
 
@@ -59,6 +63,8 @@ process run_cstacks {
 process run_sstacks {
     tag { popMap.baseName }
 
+    label 'stacks'
+
     input:
         val wf
         tuple popMap, path
@@ -81,6 +87,8 @@ process run_sstacks {
 
 process run_tsv2bam {
     tag { popMap.baseName }
+
+    label 'stacks'
 
     input:
         val wf
@@ -105,6 +113,8 @@ process run_tsv2bam {
 process run_gstacks {
     tag { popMap.baseName }
 
+    label 'stacks'
+
     input:
         val wf
         tuple popMap, path
@@ -127,6 +137,8 @@ process run_gstacks {
 
 process run_populations {
     tag { popMap.baseName }
+
+    label 'stacks'
 
     publishDir "${path}/populations_out", mode: 'copy'
 

@@ -11,8 +11,8 @@ def empty_args_main_map() {
     // Instantiate required args
     args.outdir = false
     args.lib_type = false
-    args.fastq_dir = false
-    args.fastq_ext = false
+    args.seq_dir = false
+    args.seq_ext = false
     args.threads = false
     args.email = false
     args.sub_workflows = false
@@ -26,14 +26,14 @@ def check_args_main(Map args) {
     def final_args = [:]
 
     // Variables to build file paths
-    def fastq_dir = check_required_args_main(args, 'fastq_dir')
-    def fastq_ext = check_required_args_main(args, 'fastq_ext')
+    def seq_dir = check_required_args_main(args, 'seq_dir')
+    def seq_ext = check_required_args_main(args, 'seq_ext')
     def sub_workflows = check_required_args_main(args, 'sub_workflows')
 
     // Required arguments
     final_args.outdir = check_required_args_main(args, 'outdir')
     final_args.lib_type = check_required_args_main(args, 'lib_type')
-    final_args.reads = fastq_dir + '/' + fastq_ext
+    final_args.seqs = seq_dir + '/' + seq_ext
     final_args.threads = check_required_args_main(args, 'threads')
     
     // Check email is provided if profile == slurm
@@ -183,10 +183,142 @@ def check_args_stacks(Map args) {
 
     } else if(! args.sub_workflows.contains('stacks_pipeline') && c_args.any {it == true}) {
 
-        println("ERROR: Arguments for the Stacks sub-workflow have been provided without specifying the '--stacks_pipeline' argument.")
+        println("ERROR: Arguments for the Stacks sub-workflow have been provided without specifying the '--sub_workflows stacks_pipeline' argument.")
         System.exit(1)
 
     }
 
     return stacks_args
+}
+
+/*
+Functions: codeml pipeline
+*/
+
+def empty_args_codeml_map() {
+    def args = [:]
+
+    args.trees = false
+    args.models = false
+    args.tests = false
+    args.mark = false
+    args.leaves = false
+    args.internals = false
+    args.codeml_param = false
+
+    return args
+    
+}
+
+def check_args_codeml(Map args) {
+
+    // Initialise empty arguments
+    codeml_args = empty_args_codeml_map()
+
+    def trees = args.trees
+
+    // Used to check if codeml_pipeline arguments have been
+    // passed when the pipeline hasn't been selected
+    def c_args = [
+        args.trees,
+        args.models,
+        args.tests,
+        args.mark,
+        args.leaves,
+        args.internals,
+        args.codeml_param
+    ]
+
+    // Default eve3-evol models
+    def default_models = [
+        'M2', 'M1', 'M3', 'M0', 
+        'M8', 'M7', 'M8a', 'bsA', 
+        'bsA1', 'bsC', 'bsD', 
+        'b_free', 'b_neut' 
+        ]
+
+    // CodeML pipeline is requested
+    if(args.sub_workflows.contains('codeml_pipeline') ){
+        
+        // Have tree files been provided
+        if(!trees){
+            println("ERROR: Provide at lease one tree file to '--trees'")
+            System.exit(1)
+        } else if(trees == true){
+            println("ERROR: '--trees' argument has been requested with no input. Check your command.")
+            System.exit(1)
+        }
+
+        // Get each tree file and check it exists
+        def tr = []
+        trees.tokenize(',').each {
+            try {
+                File file = new File(it)
+                assert file.exists()
+                tr.add(file)
+            } catch (AssertionError e){
+                println('ERROR: One of the provided tree files does not exist.\nError message: ' + e.getMessage())
+                System.exit(1)
+            }
+        }
+
+        codeml_args.trees = tr
+
+        // Check models + tests
+        // Arge 'tests' a fully encapsulated subset of models
+        mod = args.models ? args.models.tokenize(' ') : default_models
+        test = args.tests ?: false
+                
+        if(test){
+     
+            try {
+                test = test.replaceAll(',', ' ').tokenize(' ')
+                // test = test.tokenize(' ')
+                assert mod.containsAll(test)
+            } catch (AssertionError e){
+                println("ERROR: discrepancy between 'models' and '--tests'\nError message: " + e.getMessage())
+                System.exit(1)
+            }
+
+            codeml_args.tests = args.tests
+        } else {
+            // No tests provided - set to false
+            codeml_args.tests = test
+        }
+        
+        // String of models
+        codeml_args.models = mod.join(' ')
+
+        // Only one of these should be provided - if two are true error
+        if(args.mark && (args.leaves || args.internals) || (args.leaves && args.internals)) {
+            println("ERROR: Arguments have been passed for more than one of '--mark, --leaves and --internals'. Please only select one, not multiple.")
+            System.exit(1)
+        } 
+        
+        // How to handle --mark (string or file)
+        File file = new File(args.mark)
+        bool = file.exists() // true if user passed a file
+
+        // Read each line of the file as a list element
+        if(bool){
+            def lst = new File(args.mark).collect{ it }
+            codeml_args.mark = lst
+        } else {
+            // Return list object - combine used in codeml workflow
+            codeml_args.mark = args.mark ? [ args.mark ] : false
+        }
+
+        // Assign final variables
+        codeml_args.leaves = args.leaves ?: false
+        codeml_args.internals = args.internals ?: false
+
+    // Arguments passed but pipeline not selected
+    } else if(! args.sub_workflows.contains('codeml_pipeline') && c_args.any {it == true}) {
+
+        println("ERROR: Arguments for the CodeML sub-workflow have been provided without specifying the '--sub_workflows codeml_pipeline'.")
+        System.exit(1)
+
+    }
+
+    return codeml_args
 }

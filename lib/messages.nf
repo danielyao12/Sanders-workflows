@@ -26,8 +26,8 @@ def help_message_main() {
         -work-dir <pth>                   Pipelines temporary working directory
         --outdir <pth>                    Absolute path to output directory
         --lib_type <str>                  Single or paired end sequence data
-        --fastq_dir <str>                 Path to directory containing FASTQ files
-        --fastq_ext '<str>'               FASTQ file extension in quotes
+        --seq_dir <str>                   Path to directory containing sequence files
+        --seq_ext '<str>'                 Sequence file extension pattern in quotes
         --threads <int>                   Number of worker threads
         --sub_workflows                   Which sub-workflows to run
 
@@ -54,8 +54,8 @@ def help_message_main() {
             -work-dir \${FASTDIR}/sequence_project/work_dir \\
             --outdir \${FASTDIR}/sequence_project \\
             --lib_type paired \\
-            --fastq_dir \${FASTDIR}/sequence_project/fastq \\
-            --fastq_ext '*_{1,2}.fastq.gz' \\
+            --seq_dir \${FASTDIR}/sequence_project/fastq \\
+            --seq_ext '*_{1,2}.fastq.gz' \\
             --threads 4 \\
             --email a1234567@adelaide.edu.au \\
             --sub_workflows qc_pipeline,stacks_pipeline \\
@@ -137,6 +137,41 @@ def help_message_stacks() {
             --tsv2bam_args '-R /path/to/paired_end_reads'
             --gstacks_args '--min-kmer-cov 5 --min-mapq 15' \\
             --populations_args '-r 0.90 --fasta-loci --fasta-samples --vcf --genepop --structure'
+        """.stripIndent()
+    )
+}
+
+def help_message_codeml() {
+    println(
+        """
+        CodeML help page - ETE Evol implementation
+
+        This sub-workflow runs CodeML using the ETE-Evol implementation. This is
+        a tool that is a wrapper around CodeML, designed to make running muliple
+        models, genes and trees a breeze. For more help regarding how to run the
+        software check out: http://etetoolkit.org/documentation/ete-evol
+
+        Required arguments:
+        --trees <str>                       List of tree files to use in the analysis
+
+        Optional arguments:
+        --models <str>                      Quoted string of models to be run by codeml
+        --tests <str>                       Quoted string of model comparisons (e.g. 'M2,M1 M3,M0')
+        --mark <str>                        Quoted string of tree markings using ETE-Evol syntax
+        --leaves <str>                      Agument specifying if every leaf should be marked
+        --internals <str>                   Agument specifying if every node should be marked
+        --codeml_param <str>                Quoted string of extra parameters to pass to ETE-Evol
+
+        NOTE:
+            - By default a common default set of models and comparisons will be conducted
+            - Select ONE of `--mark`, `--leaves` or `--internals` but never more than ONE
+
+        Example command:
+        nextflow run main.nf \\
+            --sub_workflows codeml_pipeline \\
+            --trees /path/to/tree.nw,/path/to/tree.nw \\
+            --models 'M2,M1,M3,M0,bsA,bsA1' \\
+            --leaves
         """.stripIndent()
     )
 }
