@@ -84,30 +84,33 @@ workflow {
         seqs
             .combine(final_args.trees)
             .map {val ->
-                tuple(val[0], val[1][0], val[2])
+                tuple( val[0], val[1][0], val[2] )
             }
             .set {seqs_tree}
 
         // Create channel from list of marks
         if(final_args.mark) {
             Channel
-                .fromList(final_args.mark)
-                .set {mark}
+                .fromList( final_args.mark )
+                .set { mark }
         } else {
             Channel
-                .empty()
+                .value( false )
                 .set { mark }
         }
 
         // Combine with seqs_tree
         seqs_tree
-            .combine(mark)
+            .combine( mark )
             .set{ seqs_tree_mark }
+
     } else {
         Channel
             .empty()
             .set { seqs_tree_mark }
     }
+
+    seqs_tree_mark.view()
 
     // Load workflows
     include {qc_pipeline} from './lib/modules/qc_pipeline/workflows' params(final_args)
