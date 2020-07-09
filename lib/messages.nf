@@ -159,9 +159,9 @@ def help_message_codeml() {
         Optional arguments:
         --models <str>                      Quoted string of models to be run by codeml
         --tests <str>                       Quoted string of model comparisons (e.g. 'M2,M1 M3,M0')
-        --mark <str>                        Quoted string of tree markings using ETE-Evol syntax
-        --leaves <str>                      Agument specifying if every leaf should be marked
-        --internals <str>                   Agument specifying if every node should be marked
+        --mark <str/file-path>              Quoted string of tree markings using ETE-Evol syntax
+        --leaves                            Agument specifying if every leaf should be marked
+        --internals                         Agument specifying if every node should be marked
         --codeml_param <str>                Quoted string of extra parameters to pass to ETE-Evol
 
         NOTE:

@@ -15,6 +15,7 @@ process run_codeml {
 
     output:
         file "*"
+        file "results_codeml.txt"
 
     when:
         wf.contains('codeml_pipeline')
@@ -36,5 +37,7 @@ process run_codeml {
         --alg ${seqs} \
         -o \${PWD} \
         ${models} ${tests} ${mark} ${leaves} ${internals} ${opt_args}
+
+        cp .command.out > results_codeml.txt
         """        
 }
