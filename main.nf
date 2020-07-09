@@ -61,7 +61,7 @@ workflow {
     // Get seq files as tuple
     Channel
         .fromFilePairs(final_args['seqs'], size: final_args['lib_type'] == 'paired' ? 2 : 1)
-        .ifEmpty { exit 1, "Cannot find any read files matching: ${final_args['seqs']}"}
+        .ifEmpty { exit 1, "No files match: ${final_args['seqs']}"}
         .set { seqs }
 
     // Get population map files
@@ -95,16 +95,6 @@ workflow {
                     final_args['sub_workflows'])
 
     // Run CodeML
-    /*
-    TO DO:
-        - Marks - create channel from list?
-            - or combine with seqs + tree + marks
-        - Check that the provided tests are in the selected models
-            - Doesn't need to be reciprocal
-            - If no models selected
-                - Check that the provided tests are all in the default models
-
-    */
     codeml_pipeline(seqs,
                     final_args['sub_workflows'])
 

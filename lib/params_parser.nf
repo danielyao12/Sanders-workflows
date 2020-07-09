@@ -213,8 +213,10 @@ def check_args_codeml(Map args) {
     // Initialise empty arguments
     codeml_args = empty_args_codeml_map()
 
-    // trees variable
     def trees = args.trees
+
+    // Used to check if codeml_pipeline arguments have been
+    // passed when the pipeline hasn't been selected
     def c_args = [
         args.trees,
         args.models,
@@ -225,7 +227,15 @@ def check_args_codeml(Map args) {
         args.codeml_param
     ]
 
-    // Requesting codeml pipeline
+    // Default eve3-evol models
+    def default_models = [
+        'M2', 'M1', 'M3', 'M0', 
+        'M8', 'M7', 'M8a', 'bsA', 
+        'bsA1', 'bsC', 'bsD', 
+        'b_free', 'b_neut' 
+        ]
+
+    // CodeML pipeline is requested
     if(args.sub_workflows.contains('codeml_pipeline') ){
         
         // Have tree files been provided
@@ -252,9 +262,30 @@ def check_args_codeml(Map args) {
 
         codeml_args.trees = tr
 
-        // Check remaining arguments
-        codeml_args.models = args.models ?: false
-        codeml_args.tests = args.tests ?: false
+        // Check models + tests
+        // Arge 'tests' a fully encapsulated subset of models
+        mod = args.models ? args.models.tokenize(' ') : default_models
+        test = args.tests ?: false
+                
+        if(test){
+     
+            try {
+                test = test.replaceAll(',', ' ').tokenize(' ')
+                // test = test.tokenize(' ')
+                assert mod.containsAll(test)
+            } catch (AssertionError e){
+                println("ERROR: discrepancy between 'models' and '--tests'\nError message: " + e.getMessage())
+                System.exit(1)
+            }
+
+            codeml_args.tests = args.tests
+        } else {
+            // No tests provided - set to false
+            codeml_args.tests = test
+        }
+        
+        // String of models
+        codeml_args.models = mod.join(' ')
 
         // Only one of these should be provided - if two are true error
         if(args.mark && (args.leaves || args.internals) || (args.leaves && args.internals)) {
@@ -264,14 +295,15 @@ def check_args_codeml(Map args) {
         
         // How to handle --mark (string or file)
         File file = new File(args.mark)
-        bool = file.exists() // Logical if file exists
+        bool = file.exists() // true if user passed a file
 
         // Read each line of the file as a list element
         if(bool){
             def lst = new File(args.mark).collect{ it }
             codeml_args.mark = lst
         } else {
-            codeml_args.mark = args.mark ?: false
+            // Return list object - combine used in codeml workflow
+            codeml_args.mark = args.mark ? [ args.mark ] : false
         }
 
         // Assign final variables

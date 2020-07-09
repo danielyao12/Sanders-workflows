@@ -14,11 +14,20 @@ workflow codeml_pipeline {
         }
         .set {seqs_tree}
 
-    run_codeml(seqs_tree,
+    // Create channel from list of marks
+    Channel
+        .fromList(params.mark)
+        .set {mark}
+
+    // Combine with seqs_tree
+    seqs_tree
+        .combine(mark)
+        .set{ seqs_tree_mark }
+
+    run_codeml(seqs_tree_mark,
                params.outdir,
                params.models,
                params.tests,
-               params.mark,
                params.leaves,
                params.internals,
                params.codeml_param,
