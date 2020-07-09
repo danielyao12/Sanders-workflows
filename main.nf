@@ -65,7 +65,7 @@ workflow {
         .set { seqs }
 
     // Get population map files
-    if(final_args['sub_workflows'].contains('stacks_pipeline')){
+    if(final_args['sub_workflows'].contains('stacks_pipeline')) {
         Channel
         .fromList(final_args['population_maps'])
         .ifEmpty { exit 1, "Cannot find population map files matching: ${final_args['population_maps']}"}
@@ -76,13 +76,39 @@ workflow {
             .set { pop_maps }
     }
 
+    // Prepare codeml input
+    if(final_args['sub_workflows'].contains('codeml_pipeline')) {
+        // Combine sequences and trees - all pairs
+        seqs
+            .combine(final_args.trees)
+            .map {val ->
+                tuple(val[0], val[1][0], val[2])
+            }
+            .set {seqs_tree}
+
+        // Create channel from list of marks
+        Channel
+            .fromList(final_args.mark)
+            .set {mark}
+
+        // Combine with seqs_tree
+        seqs_tree
+            .combine(mark)
+            .set{ seqs_tree_mark }
+    } else {
+        Channel
+            .empty()
+            .set { seqs_tree_mark }
+    }
+
     // Load workflows
     include {qc_pipeline} from './lib/modules/qc_pipeline/workflows' params(final_args)
     include {stacks_pipeline} from './lib/modules/stacks_pipeline/workflows' params(final_args)
     include {codeml_pipeline} from './lib/modules/codeml_pipeline/workflows' params(final_args)
 
     // Run QC pipeline
-    qc_pipeline(seqs, final_args['sub_workflows'])
+    qc_pipeline(seqs,
+                final_args['sub_workflows'])
 
     // Reassign seqs if trim has been specified
     if(final_args['trim']){
@@ -95,7 +121,7 @@ workflow {
                     final_args['sub_workflows'])
 
     // Run CodeML
-    codeml_pipeline(seqs,
+    codeml_pipeline(seqs_tree_mark,
                     final_args['sub_workflows'])
 
 }
