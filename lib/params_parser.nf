@@ -296,17 +296,23 @@ def check_args_codeml(Map args) {
         } 
         
         // How to handle --mark (string or file)
-        File file = new File(args.mark)
-        bool = file.exists() // true if user passed a file
+        if(args.mark){
 
-        // Read each line of the file as a list element
-        if(bool){
-            def lst = new File(args.mark).collect{ it }
-            codeml_args.mark = lst
+            File file = new File(args.mark)
+            bool = file.exists() // true if user passed a file
+
+            // Read each line of the file as a list element
+            if(bool){
+                def lst = new File(args.mark).collect{ it }
+                codeml_args.mark = lst
+            } else {
+                // Return list object - combine used in codeml workflow
+                codeml_args.mark = [ args.mark ]
+            }
+
         } else {
-            // Return list object - combine used in codeml workflow
-            codeml_args.mark = args.mark ? [ args.mark ] : false
-        }
+            codeml_args.mark = false
+        }      
 
         // Assign final variables
         codeml_args.leaves = args.leaves ?: false

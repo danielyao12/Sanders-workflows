@@ -56,6 +56,8 @@ workflow {
 
     /*
     Build channels of files - reads + map files
+    
+    MAKE THESE FUNCTIONS IN THE UTILITIES SCRIPT
     */
 
     // Get seq files as tuple
