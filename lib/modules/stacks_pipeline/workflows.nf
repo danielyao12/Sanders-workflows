@@ -21,25 +21,30 @@ workflow stacks_pipeline {
         .combine(pop_maps)
         .set { tuple_dir_map }
 
-    // Tuple: [ Population_map, file_string ] - Not the cleanest...
+    // Tuple: [ file_string, Population_map ] - Not the cleanest...
     tuple_dir_map
         .map{ val -> 
 
+            // Populations file
             String f = val[1]
             File file = new File(f)
+
+            // Empty list arguments
             sample_list = []
             file_list = []
 
+            // Build: sample arguments for command
+            // Build: file paths to copy sequences to 02_XXXX directory
             file.eachLine { line -> 
                 def parts = line.split('\t')
-                def pth = '-s ' + val[0] + '/' + parts[0]
+                def pth = '-s ' + parts[0]
                 def fl = val[0] + '/' + parts[0] + '*'
 
                 sample_list.add(pth)
                 file_list.add(fl)
             }
 
-            // Return file path and 
+            // Return file path, cstacks sample commands and files to copy with wildcard
             sample_list = sample_list.join(' ')
             file_list = file_list.join(' ')
             return tuple(file, sample_list, file_list)
@@ -68,7 +73,5 @@ workflow stacks_pipeline {
     run_populations(workflow,
                 run_gstacks.out.pop_path,
                 params.populations_args)
-    
-    // emit:
-    //     run_ustacks.out
+
 }
