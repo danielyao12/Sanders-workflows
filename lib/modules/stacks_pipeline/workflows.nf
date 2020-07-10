@@ -34,10 +34,10 @@ workflow stacks_pipeline {
             file_list = []
 
             // Build: sample arguments for command
-            // Build: file paths to copy sequences to 02_XXXX directory
+            // Build: file paths to copy sequences to comparison_XXXX directory
             file.eachLine { line -> 
                 def parts = line.split('\t')
-                def pth = '-s ' + parts[0]
+                def pth = '-s ' + val[0] + '/' + parts[0]
                 def fl = val[0] + '/' + parts[0] + '*'
 
                 sample_list.add(pth)
@@ -73,5 +73,7 @@ workflow stacks_pipeline {
     run_populations(workflow,
                 run_gstacks.out.pop_path,
                 params.populations_args)
-
+    
+    // emit:
+    //     run_ustacks.out
 }
