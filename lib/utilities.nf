@@ -53,7 +53,7 @@ def check_subWorkflow_selection(String workflows) {
     def subWork = [ 'qc_pipeline', 
                     'stacks_pipeline',
                     'codeml_pipeline',
-                    'geneCap_pipeline', 
+                    'consensus_pipeline', 
                     'varCall_pipeline', 
                     'transcriptome_pipeline' ]
     

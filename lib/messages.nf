@@ -18,7 +18,7 @@ def help_message_main() {
             - qc_pipeline: Fastp/FastQC wrapper for sequence QC
             - stacks_pipeline: Run STACKS on RAD-seq data
             - codeml_pipeline: Run CodeML using ETE-Evol
-            - geneCap_pipeline: Get consensus gene models from gene-capture data
+            - consensus_pipeline: Get consensus gene models from gene-capture data
             - varCall_pipeline: Call variants against reference genomes
             - trinity_pipeline: Assemble RNA-seq data into transcriptomes
 
@@ -177,6 +177,35 @@ def help_message_codeml() {
         """.stripIndent()
     )
 }
+
+def help_message_consensus() {
+    println(
+        """
+        Consensus pipeline help page
+
+        This sub-workflow generates consensus sequences using BWA/BCFtools. The reads are aligned
+        to a reference genome/sequence using BWA, with a consensus sequence being called by BCFtools.
+        Users can provide a single reference genome or a text file with key-value pairings of which
+        samples (column 1) should be aligned to which genome (column 2).
+
+        Required arguments:
+        --reference <str/file-path>         File path to a reference genome or file path to a csv file with sample-reference pairings
+
+        Optional arguments:
+        --aligner_commands <str>            Quoted string of extra commands to pass to BWA-mem
+        --mpileup_commands <str>            Quoted string of extra commands to pass to BCFtools mpileup
+        --norm_commands <str>               Quoted string of extra commands to pass to BCFtools norm
+        --consensus_commands <str>          Quoted string of extra commands to pass to BCFtools consensus
+
+        Example command:
+        nextflow run main.nf \\
+            --reference /path/to/reference_mappings.csv \\
+            --aligner_commands '-M -B 2' \\
+            --consensus_commands '-d 120 -Q 20 -q 20'
+        """.stripIndent()
+    )
+}
+
 
 // Return message on completion
 def complete_message(String version){
