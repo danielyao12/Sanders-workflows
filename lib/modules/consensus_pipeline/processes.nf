@@ -49,7 +49,7 @@ process run_bwa {
         val wf
 
     output:
-        path "*filtered.bam*", emit: bam
+        tuple path("*filtered.bam"), path("*filtered.bam.bai"), emit: bam
         file "*.flagstat"
 
     when:
@@ -83,7 +83,7 @@ process run_consensus {
     input:
         tuple id, file(seqs), path(ref), file(idx)
         val outdir
-        file bam
+        tuple file(bam), file(bai)
         val mpileup
         val norm
         val consensus
