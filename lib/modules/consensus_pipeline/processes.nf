@@ -66,7 +66,7 @@ process run_bwa {
 
         samtools flagstat -@ ${task.cpus} ${id}.bam > ${id}.flagstat
 
-        smatools view -b -@ ${task.cpus} -F 4 ${id}.bam | \
+        samtools view -b -@ ${task.cpus} -F 4 ${id}.bam | \
         samtools sort -O BAM -@ ${task.cpus} -o ${id}_filtered.bam
 
         samtools index -@ ${task.cpus} ${id}_filtered.bam
