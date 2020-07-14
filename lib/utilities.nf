@@ -1,4 +1,4 @@
-include {version_message; help_message_main; help_message_qc; help_message_stacks; help_message_codeml} from './messages.nf'
+include {version_message; help_message_main; help_message_qc; help_message_stacks; help_message_codeml; help_message_consensus} from './messages.nf'
 
 // Help/version
 def help_or_version(Map args, String version){
@@ -23,6 +23,11 @@ def help_or_version(Map args, String version){
     } else if(args.help == 'codeml_pipeline') {
         version_message(version)
         help_message_codeml()
+        System.exit(0)
+        
+    } else if(args.help == 'consensus_pipeline') {
+        version_message(version)
+        help_message_consensus()
         System.exit(0)
     }
 

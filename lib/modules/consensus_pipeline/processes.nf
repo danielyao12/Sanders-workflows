@@ -3,6 +3,8 @@ process run_index {
 
     publishDir "${pth}", mode: 'copy'
 
+    label 'index'
+
     input:
         tuple path(ref), pth
         val wf
@@ -37,6 +39,8 @@ process run_bwa {
     tag { id }
 
     publishDir "${outdir}/consensus/01_bwa/${ref.simpleName}", mode: 'copy'
+
+    label 'bwa'
 
     input:
         tuple id, file(seqs), path(ref), file(idx)
