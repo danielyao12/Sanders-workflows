@@ -201,7 +201,7 @@ def help_message_consensus() {
         nextflow run main.nf \\
             --reference /path/to/reference_mappings.csv \\
             --aligner_commands '-M -B 2' \\
-            --consensus_commands '-d 120 -Q 20 -q 20'
+            --mpileup_commands '-d 120 -Q 20 -q 20'
         """.stripIndent()
     )
 }
