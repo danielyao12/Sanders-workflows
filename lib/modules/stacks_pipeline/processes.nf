@@ -149,7 +149,7 @@ process run_populations {
 
     output:
         tuple popMap, path, emit: pop_path
-        file("*.{tsv,fa,gz}")
+        file("*")
 
     when:
         wf.contains('stacks_pipeline')

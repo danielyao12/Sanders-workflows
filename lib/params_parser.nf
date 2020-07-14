@@ -255,6 +255,8 @@ def check_args_codeml(Map args) {
 
     // CodeML pipeline is requested
     if(args.sub_workflows.contains('codeml_pipeline') ){
+
+        codeml_args.codeml_param = codeml_param ?: false
         
         // Have tree files been provided
         if(!trees){
@@ -343,4 +345,97 @@ def check_args_codeml(Map args) {
     }
 
     return codeml_args
+}
+
+/*
+Functions: consensus pipeline
+*/
+
+def empty_args_consensus_map() {
+    def args = [:]
+
+    args.reference = false
+    args.aligner_commands = false
+    args.mpileup_commands = false
+    args.norm_commands = false
+    args.consensus_commands = false
+
+    return args
+    
+}
+
+def check_args_consensus(Map args) {
+    // Initialise empty arguments
+    consensus_args = empty_args_consensus_map()
+    
+    // Define references
+    def ref = args.reference
+
+    // Consensus arguments - Arguments not passed without pipeline call
+    def c_args = [
+        args.reference,
+        args.aligner_commands,
+        args.mpileup_commands,
+        args.norm_commands,
+        args.consensus_commands
+    ]
+
+    if(args.sub_workflows.contains('consensus_pipeline') ){
+
+        // Extra arguments to BWA/BCFtools
+        consensus_args.aligner_commands = args.aligner_commands ?: false
+        consensus_args.mpileup_commands = args.mpileup_commands ?: false
+        consensus_args.norm_commands = args.norm_commands ?: false
+        consensus_args.consensus_commands = args.consensus_commands ?: false
+
+        // Is there an argument to --reference
+        if(!ref){
+            println("ERROR: No argument passed to `--reference`")
+            System.exit(1)
+        } else if(ref == true){
+            println("ERROR: '--references' argument has been requested with no input. Check your command.")
+            System.exit(1)
+        }
+
+        // Argument must be a file regardless of type (fasta/csv) - check it exists
+        try {
+            File file = new File(ref)
+            assert file.exists()
+        } catch (AssertionError e) {
+            println("ERROR: File passed to '--refernce' doesn't exist. Needs to be either a reference fasta file or a CSV file with sample-reference pairings\nError message: " + e.getMessage())
+            System.exit(1)
+        }
+
+        // CSV - return list of tuples [ [sampleID, ref_path], [..., ...]]
+        if(ref.endsWith('csv')){
+            File file = new File(ref)
+            def ref_lst = []
+
+            // Append tuple to list
+            file.eachLine { line ->
+                def parts = line.split(",")
+                ref_lst.addAll( [ [parts[0], parts[1]] ] )
+            }
+
+            // Assign list of tuples to references
+            consensus_args.reference = ref_lst
+
+        // Not CSV - check it has valid extension for genomic fasta
+        } else if(ref.endsWith('fa') || ref.endsWith('fasta') || ref.endsWith('fna')) {
+            consensus_args.reference = ref
+
+        // Not CSV or Fasta - error
+        } else {
+            println("ERROR: File passed to `--reference` exists but isn't a CSV with extension 'csv' or a FASTA with extensions 'fa', 'fasta' or 'fna'. Please check your input")
+            System.exit(1)
+        }
+
+    // Will run if another pipeline has been requested but this hasn't but there are
+    // arguments to it
+    } else if(! args.sub_workflows.contains('consensus_pipeline') && c_args.any {it == true}) {
+        println("ERROR: Arguments for the consensus sub-workflow have been provided without specifying the '--sub_workflows consensus_pipeline' argument.")
+        System.exit(1)
+    }
+
+    return consensus_args
 }
