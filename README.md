@@ -6,7 +6,7 @@ the Sanders research group. The current workflows I am looking to implement are:
 * [x] QC pipeline
 * [x] Stacks (v2) pipeline
 * [x] CodeML
-* [ ] Consensus calling
+* [x] Consensus calling
 * [ ] Variant calling
 * [ ] Trinity pipeline
 
