@@ -195,6 +195,8 @@ def help_message_consensus() {
         --aligner_commands <str>            Quoted string of extra commands to pass to BWA-mem
         --mpileup_commands <str>            Quoted string of extra commands to pass to BCFtools mpileup
         --norm_commands <str>               Quoted string of extra commands to pass to BCFtools norm
+        --filter_commands <str>             Quoted string of extra commands to pass to BCFtools filter
+        --view_commands <str>               Quoted string of extra commands to pass to BCFtools view
         --consensus_commands <str>          Quoted string of extra commands to pass to BCFtools consensus
 
         Example command:

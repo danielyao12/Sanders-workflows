@@ -86,6 +86,8 @@ process run_consensus {
         tuple file(bam), file(bai)
         val mpileup
         val norm
+        val filter
+        val view
         val consensus
         val wf
 
@@ -99,15 +101,20 @@ process run_consensus {
     script:
         def opt_mpileup = mpileup ?: '-d 10 -Q 20 -q 20'
         def opt_norm = norm ?: '-m +any'
-        def opt_consensus = consensus ?: ''
+        def opt_filter = filter ?: '--SnpGap 5'
+        def opt_view = view ?: ''
+        def opt_consensus = consensus ?: '-H 1'
         
         """
         bcftools mpileup -Ou ${opt_mpileup} -f ${ref} ${bam} | \
-        bcftools call -c - | \
-        bcftools norm ${opt_norm} -f ${ref} -Oz -o ${id}.vcf.gz
+        bcftools call -Ou -c - | \
+        bcftools norm ${opt_norm} -f ${ref} -Ou | \
+        bcftools filter -Ou ${opt_filter} | \
+        bcftools view ${opt_view} | \
+        bcftools sort --temp-dir \${PWD} -Oz -o ${id}.vcf.gz
 
         bcftools index ${id}.vcf.gz
 
-        bcftools consensus ${opt_consensus} -f ${ref} -H 1 -o ${id}.fasta ${id}.vcf.gz
+        bcftools consensus ${opt_consensus} -f ${ref} -o ${id}.fasta ${id}.vcf.gz
         """  
 }

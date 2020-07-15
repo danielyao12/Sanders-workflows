@@ -58,6 +58,8 @@ workflow consensus_pipeline {
                   run_bwa.out.bam,
                   params.mpileup_commands,
                   params.norm_commands,
+                  params.filter_commands,
+                  params.view_commands,
                   params.consensus_commands,
                   workflow)
 }

@@ -377,6 +377,8 @@ def check_args_consensus(Map args) {
         args.aligner_commands,
         args.mpileup_commands,
         args.norm_commands,
+        args.filter_commands,
+        args.view_commands,
         args.consensus_commands
     ]
 
@@ -386,6 +388,8 @@ def check_args_consensus(Map args) {
         consensus_args.aligner_commands = args.aligner_commands ?: false
         consensus_args.mpileup_commands = args.mpileup_commands ?: false
         consensus_args.norm_commands = args.norm_commands ?: false
+        consensus_args.filter_commands = args.filter_commands ?: false
+        consensus_args.view_commands = args.view_commands ?: false
         consensus_args.consensus_commands = args.consensus_commands ?: false
 
         // Is there an argument to --reference
