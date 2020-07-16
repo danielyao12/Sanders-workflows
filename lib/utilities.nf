@@ -76,3 +76,102 @@ def check_subWorkflow_selection(String workflows) {
     return lst
     
 }
+
+// Print arguments for each workflow
+def print_subWorkflow_args(List workflow, Map args) {
+
+    // Default arguments
+    default_keys = ['outdir', 'lib_type', 'seqs',
+                    'threads', 'sub_workflows', 'email']
+
+    // QC arguments
+    qc_keys = ['trim', 'detect_adapter', 'adapter_file', 'fastp_optional',
+               'unpaired_file', 'failed_file']
+    
+    // Stacks arguments
+    stacks_keys = ['population_maps', 'ustacks_args', 'cstacks_args', 'sstacks_args', 
+                   'tsv2bam_args', 'gstacks_args', 'populations_args']
+
+    // CodeML arguments
+    codeml_keys = ['trees', 'conda_env_path', 'models', 'tests',
+                   'mark', 'leaves', 'internals', 'codeml_param']
+
+    //Consensus arguments
+    consensus_keys = ['reference', 'aligner_commands', 'mpileup_commands', 'norm_commands',
+                      'filter_commands', 'view_commands', 'consensus_commands']
+
+    // Print arguments to screen
+    println """
+    ###########################################
+    ################ Arguments ################
+    """.stripIndent()
+
+    def map_defaults = args.subMap(default_keys)
+    println('-------------- Main arguments -------------')
+    map_defaults.each {key, val ->
+        if(val instanceof java.util.ArrayList) {
+            println "${key}:"
+            val.each {v ->
+                println "  ${v}"
+            }
+        } else {
+            println "${key}: ${val}"
+        }
+    }
+
+    workflow.each {wf ->
+        // Print arguments
+        if(wf == 'qc_pipeline') {
+            def submap = args.subMap(qc_keys)
+            println ''
+            println('--------------- QC arguments --------------')
+            println ''
+            submap.each {key, val ->
+                println "${key}: ${val}"
+            }
+        } else if(wf == 'stacks_pipeline') {
+            def submap = args.subMap(stacks_keys)
+            println ''
+            println('------------- Stacks arguments ------------')
+            println ''
+            submap.each {key, val ->
+                if(val instanceof java.util.ArrayList) {
+                    println "${key}:"
+                    val.each {v ->
+                        println "  ${v}"
+                    }
+                } else {
+                    println "${key}: ${val}"
+                }
+            }
+        } else if(wf == 'codeml_pipeline') {
+            def submap = args.subMap(codeml_keys)
+            println ''
+            println('------------- CodeML arguments ------------')
+            println ''
+            submap.each {key, val ->
+                println "${key}: ${val}"
+            }
+        } else if(wf == 'consensus_pipeline') {
+            def submap = args.subMap(consensus_keys)
+            println ''
+            println('----------- Consensus arguments -----------')
+            println ''
+            submap.each {key, val ->
+                if(val instanceof java.util.ArrayList){
+                    println "${key}:"
+                    val.each { v ->
+                        println "  ${v[0]}: ${v[1]}"
+                    }
+                } else {
+                    println "${key}: ${val}"
+                }
+            }
+        }
+    }
+
+    println"""
+    ###########################################
+    """.stripIndent()
+
+}

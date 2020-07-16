@@ -5,7 +5,7 @@ version = '1.0'
 
 // Include helper functions here
 include {empty_args_main_map; check_args_main; check_args_QC; check_args_stacks; check_args_codeml; check_args_consensus} from './lib/params_parser'
-include {help_or_version} from './lib/utilities'
+include {help_or_version; print_subWorkflow_args} from './lib/utilities'
 
 // Argument parsing
 default_params = empty_args_main_map()
@@ -40,17 +40,8 @@ checked_args['main_args'].putAll(consensus_args)
 // Final arguments to use in pipeline
 final_args = checked_args['main_args']
 
-// Print key and values
-println """
-###########################################
-################ Arguments ################
-"""
-final_args.each {key, val ->
-    println "$key: $val"
-}
-println"""
-###########################################
-"""
+// Print arguments to screen
+print_subWorkflow_args(final_args['sub_workflows'], final_args)
 
 /*
 Calling sub-workflows: Main pipeline
