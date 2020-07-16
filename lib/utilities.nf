@@ -100,14 +100,19 @@ def print_subWorkflow_args(List workflow, Map args) {
     consensus_keys = ['reference', 'aligner_commands', 'mpileup_commands', 'norm_commands',
                       'filter_commands', 'view_commands', 'consensus_commands']
 
+    def args_map = [ qc_pipeline: qc_keys, 
+                     stacks_pipeline: stacks_keys, 
+                     codeml_pipeline: codeml_keys, 
+                     consensus_pipeline: consensus_keys ]
+
     // Print arguments to screen
     println """
-    ###########################################
-    ################ Arguments ################
+    ##################################################
+    ################### Arguments ####################
     """.stripIndent()
 
     def map_defaults = args.subMap(default_keys)
-    println('-------------- Main arguments -------------')
+    println('--------------------- Main -----------------------\n')
     map_defaults.each {key, val ->
         if(val instanceof java.util.ArrayList) {
             println "${key}:"
@@ -119,53 +124,31 @@ def print_subWorkflow_args(List workflow, Map args) {
         }
     }
 
-    workflow.each {wf ->
-        // Print arguments
-        if(wf == 'qc_pipeline') {
-            def submap = args.subMap(qc_keys)
-            println ''
-            println('--------------- QC arguments --------------')
-            println ''
-            submap.each {key, val ->
-                println "${key}: ${val}"
-            }
-        } else if(wf == 'stacks_pipeline') {
-            def submap = args.subMap(stacks_keys)
-            println ''
-            println('------------- Stacks arguments ------------')
-            println ''
-            submap.each {key, val ->
-                if(val instanceof java.util.ArrayList) {
+    // Iterate through each sub-workflow
+    workflow.each { wf ->
+        
+        def list = args_map[wf]
+        def sub_map = args.subMap(list)
+        String short_name = '--------------------- ' + wf.split('_')[0]
+        Integer n = 50 - short_name.length() - 1
+
+        println('\n' + short_name + ' ' + '-' * n + '\n')
+
+        sub_map.each { key, val ->
+            if(val instanceof java.util.ArrayList) {
+                if(wf == 'consensus_pipeline') {
+                    println "${key}:"
+                    val.each { v ->
+                        println "  ${v[0]} -> ${v[1]}"
+                    }
+                } else {
                     println "${key}:"
                     val.each {v ->
                         println "  ${v}"
                     }
-                } else {
-                    println "${key}: ${val}"
                 }
-            }
-        } else if(wf == 'codeml_pipeline') {
-            def submap = args.subMap(codeml_keys)
-            println ''
-            println('------------- CodeML arguments ------------')
-            println ''
-            submap.each {key, val ->
+            } else {
                 println "${key}: ${val}"
-            }
-        } else if(wf == 'consensus_pipeline') {
-            def submap = args.subMap(consensus_keys)
-            println ''
-            println('----------- Consensus arguments -----------')
-            println ''
-            submap.each {key, val ->
-                if(val instanceof java.util.ArrayList){
-                    println "${key}:"
-                    val.each { v ->
-                        println "  ${v[0]}: ${v[1]}"
-                    }
-                } else {
-                    println "${key}: ${val}"
-                }
             }
         }
     }
