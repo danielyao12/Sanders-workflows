@@ -92,7 +92,7 @@ process run_consensus {
         val wf
 
     output:
-        file "${id}.fasta", emit: fasta
+        path "${id}.fasta", emit: fasta
         file "${id}.vcf.gz"
 
     when:
@@ -122,7 +122,7 @@ process run_consensus {
 process run_consensus_clean_up {
 
     input:
-        tuple fasta
+        file fasta
         val cleanup
         val outdir
         val wf
