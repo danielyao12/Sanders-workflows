@@ -198,6 +198,7 @@ def help_message_consensus() {
         --filter_commands <str>             Quoted string of extra commands to pass to BCFtools filter
         --view_commands <str>               Quoted string of extra commands to pass to BCFtools view
         --consensus_commands <str>          Quoted string of extra commands to pass to BCFtools consensus
+        --cleanup                           Keep only the consensus FASTA files (delete BAM and VCF files)
 
         Example command:
         nextflow run main.nf \\

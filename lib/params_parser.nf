@@ -358,7 +358,10 @@ def empty_args_consensus_map() {
     args.aligner_commands = false
     args.mpileup_commands = false
     args.norm_commands = false
+    args.filter_commands = false
+    args.view_commands = false
     args.consensus_commands = false
+    args.cleanup = false
 
     return args
     
@@ -379,7 +382,8 @@ def check_args_consensus(Map args) {
         args.norm_commands,
         args.filter_commands,
         args.view_commands,
-        args.consensus_commands
+        args.consensus_commands,
+        args.cleanup
     ]
 
     if(args.sub_workflows.contains('consensus_pipeline') ){
@@ -391,6 +395,7 @@ def check_args_consensus(Map args) {
         consensus_args.filter_commands = args.filter_commands ?: false
         consensus_args.view_commands = args.view_commands ?: false
         consensus_args.consensus_commands = args.consensus_commands ?: false
+        consensus_args.cleanup = args.cleanup ?: false
 
         // Is there an argument to --reference
         if(!ref){

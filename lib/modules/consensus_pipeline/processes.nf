@@ -118,3 +118,22 @@ process run_consensus {
         bcftools consensus ${opt_consensus} -f ${ref} -o ${id}.fasta ${id}.vcf.gz
         """  
 }
+
+process consensus_cleanUp {
+
+    input:
+        val cleanup
+        val outdir
+        val wf
+
+    when:
+        wf.containts('consensus_pipeline') && cleanup == true
+
+    script:
+        """
+        find ${outdir} -type f -name '*.bam' -delete
+        find ${outdir} -type f -name '*.bam.bai' -delete
+        find ${outdir} -type f -name '*.vcf.gz' -delete
+        """
+
+}
