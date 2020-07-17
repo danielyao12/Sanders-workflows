@@ -122,7 +122,7 @@ process run_consensus {
 process run_consensus_clean_up {
 
     input:
-        file fasta
+        tuple fasta
         val cleanup
         val outdir
         val wf
