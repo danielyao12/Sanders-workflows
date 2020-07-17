@@ -128,7 +128,7 @@ process run_consensus_clean_up {
         val wf
 
     when:
-        wf.containts('consensus_pipeline') && cleanup == true
+        wf.contains('consensus_pipeline') && cleanup == true
 
     script:
         """
