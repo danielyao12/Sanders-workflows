@@ -1,4 +1,4 @@
-include {run_index; run_bwa; run_consensus} from './processes'
+include {run_index; run_bwa; run_consensus; run_consensus_clean_up} from './processes'
 
 workflow consensus_pipeline {
     take: seqs
@@ -62,4 +62,12 @@ workflow consensus_pipeline {
                   params.view_commands,
                   params.consensus_commands,
                   workflow)
+
+    // Collect all fasta files so the final step happens last
+    run_consensus.out.fasta.collect().set { ch }
+
+    run_consensus_clean_up(ch,
+                           params.cleanup,
+                           params.outdir,
+                           workflow)
 }
