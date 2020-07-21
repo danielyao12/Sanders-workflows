@@ -44,89 +44,89 @@ final_args = checked_args['main_args']
 print_subWorkflow_args(final_args['sub_workflows'], final_args)
 
 /*
-Build input file channels
-*/
-
-// Get seq files as tuple
-Channel
-    .fromFilePairs(final_args['seqs'], size: final_args['lib_type'] == 'paired' ? 2 : 1)
-    .ifEmpty { exit 1, "No files match: ${final_args['seqs']}"}
-    .set { seqs }
-
-// Get population map files
-if(final_args['sub_workflows'].contains('stacks_pipeline')) {
-    Channel
-    .fromList(final_args['population_maps'])
-    .ifEmpty { exit 1, "Cannot find population map files matching: ${final_args['population_maps']}"}
-    .set { pop_maps }
-} else {
-    Channel
-        .empty()
-        .set { pop_maps }
-}
-
-// Prepare codeml input
-if(final_args['sub_workflows'].contains('codeml_pipeline')) {
-    // Combine sequences and trees - all pairs
-    seqs
-        .combine(final_args.trees)
-        .map {val ->
-            tuple( val[0], val[1], val[2] )
-        }
-        .set {seqs_tree}
-
-    // Create channel from list of marks
-    if(final_args.mark) {
-        Channel
-            .fromList( final_args.mark )
-            .set { mark }
-    } else {
-        Channel
-            .value( false )
-            .set { mark }
-    }
-
-    // Combine with seqs_tree
-    seqs_tree
-        .combine( mark )
-        .set{ seqs_tree_mark }
-
-} else {
-    Channel
-        .empty()
-        .set { seqs_tree_mark }
-}
-
-// Consensus pipeline arguments - [ seqID, [read1, read2], /path/to/ref.fa ]
-if(final_args['sub_workflows'].contains('consensus_pipeline')) {
-
-    // When single file (string)
-    if(final_args.reference instanceof java.lang.String) {
-        Channel
-            .from(final_args.reference)
-            .set { ch }            
-        seqs
-            .combine(ch)
-            .set  { seq_ref }
-
-    // When list of references (CSV)
-    } else if(final_args.reference instanceof java.util.ArrayList) {
-        Channel
-            .fromList(final_args.reference)
-            .map { val ->
-                return tuple(val[0], val[1])
-            }
-            .set { ch }            
-        seqs
-            .join(ch, by: [0])
-            .set { seq_ref }
-    }
-}
-
-/*
 Call to sub-workflows
 */
 workflow {
+
+    /*
+    Build input file channels
+    */
+    
+    // Get seq files as tuple
+    Channel
+        .fromFilePairs(final_args['seqs'], size: final_args['lib_type'] == 'paired' ? 2 : 1)
+        .ifEmpty { exit 1, "No files match: ${final_args['seqs']}"}
+        .set { seqs }
+    
+    // Get population map files
+    if(final_args['sub_workflows'].contains('stacks_pipeline')) {
+        Channel
+        .fromList(final_args['population_maps'])
+        .ifEmpty { exit 1, "Cannot find population map files matching: ${final_args['population_maps']}"}
+        .set { pop_maps }
+    } else {
+        Channel
+            .empty()
+            .set { pop_maps }
+    }
+    
+    // Prepare codeml input
+    if(final_args['sub_workflows'].contains('codeml_pipeline')) {
+        // Combine sequences and trees - all pairs
+        seqs
+            .combine(final_args.trees)
+            .map {val ->
+                tuple( val[0], val[1], val[2] )
+            }
+            .set {seqs_tree}
+    
+        // Create channel from list of marks
+        if(final_args.mark) {
+            Channel
+                .fromList( final_args.mark )
+                .set { mark }
+        } else {
+            Channel
+                .value( false )
+                .set { mark }
+        }
+    
+        // Combine with seqs_tree
+        seqs_tree
+            .combine( mark )
+            .set{ seqs_tree_mark }
+    
+    } else {
+        Channel
+            .empty()
+            .set { seqs_tree_mark }
+    }
+    
+    // Consensus pipeline arguments - [ seqID, [read1, read2], /path/to/ref.fa ]
+    if(final_args['sub_workflows'].contains('consensus_pipeline')) {
+    
+        // When single file (string)
+        if(final_args.reference instanceof java.lang.String) {
+            Channel
+                .from(final_args.reference)
+                .set { ch }            
+            seqs
+                .combine(ch)
+                .set  { seq_ref }
+    
+        // When list of references (CSV)
+        } else if(final_args.reference instanceof java.util.ArrayList) {
+            Channel
+                .fromList(final_args.reference)
+                .map { val ->
+                    return tuple(val[0], val[1])
+                }
+                .set { ch }            
+            seqs
+                .join(ch, by: [0])
+                .set { seq_ref }
+        }
+    }
 
     // Load workflows
     include {qc_pipeline} from './lib/modules/qc_pipeline/workflows' params(final_args)
