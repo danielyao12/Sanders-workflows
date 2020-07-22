@@ -8,6 +8,7 @@ process run_trinity {
 
     input:
         tuple id, file(reads)
+        val lib_type
         val outdir
         val trinity_opt
         val wf
@@ -22,7 +23,7 @@ process run_trinity {
     script:
     def opt_args = trinity_opt ?: ''
 
-    if(params.lib_type == 'paired') {
+    if(lib_type == 'paired') {
         """
         Trinity \
         --seqType fq \
@@ -35,7 +36,7 @@ process run_trinity {
         --full_cleanup \
         ${opt_args}
         """
-    } else if(params.lib_type == 'single') {
+    } else if(lib_type == 'single') {
         """
         Trinity \
         --seqType fq \

@@ -8,6 +8,7 @@ workflow transcript_pipeline {
 
     // Assemble RNA-seq data
     run_trinity(seqs,
+                params.lib_type,
                 params.outdir,
                 params.trinity_optional,
                 workflow)
