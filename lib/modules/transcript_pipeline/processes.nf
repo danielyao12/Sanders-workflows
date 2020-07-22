@@ -141,7 +141,7 @@ process run_transdecoder_longorfs {
     
     script:
     """
-    Transdecoder.LongOrfs -t ${fastaFile} --output_dir ${id}_longOrf
+    TransDecoder.LongOrfs -t ${fastaFile} --output_dir ${id}_longOrf
     """
 }
 
@@ -231,7 +231,7 @@ process run_transdecoder_predict {
     
     script:
     """
-    Transdecoder.Predict -t ${fastaFile} \
+    TransDecoder.Predict -t ${fastaFile} \
     --retain_pfam_hits ${hmmer} \
     --retain_blastp_hits ${blast} \
     --output_dir ${longOrfs}
