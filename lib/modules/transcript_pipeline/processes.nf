@@ -105,7 +105,7 @@ process get_databases {
 
         makeblastdb \
         -in uniprot_sprot.fasta \
-        -dbtype nucl \
+        -dbtype prot \
         -input_type fasta \
         -parse_seqids
 
@@ -153,8 +153,6 @@ process run_blast {
     publishDir "${outdir}/transdecoder/blast", mode: 'copy'
 
     label 'homology'
-
-    stageInMode 'copy'
 
     input:
         tuple id, path(longOrf), file(fa), file(nhr), file(nin), file(nog), file(nsd), file(nsi), file(nsq)

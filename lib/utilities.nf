@@ -87,8 +87,8 @@ def check_subWorkflow_selection(String workflows) {
 def print_subWorkflow_args(List workflow, Map args) {
 
     // Default arguments
-    default_keys = ['outdir', 'lib_type', 'seqs',
-                    'threads', 'sub_workflows', 'email']
+    default_keys = ['outdir', 'lib_type', 'seqs', 'threads', 
+                    'sub_workflows', 'submission_queue', 'email']
 
     // QC arguments
     qc_keys = ['trim', 'detect_adapter', 'adapter_file', 'fastp_optional',
