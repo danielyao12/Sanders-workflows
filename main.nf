@@ -4,7 +4,7 @@ nextflow.preview.dsl=2
 version = '1.0'
 
 // Include helper functions here
-include {empty_args_main_map; check_args_main; check_args_QC; check_args_stacks; check_args_codeml; check_args_consensus} from './lib/params_parser'
+include {empty_args_main_map; check_args_main; check_args_QC; check_args_stacks; check_args_codeml; check_args_consensus; check_args_transcript} from './lib/params_parser'
 include {help_or_version; print_subWorkflow_args} from './lib/utilities'
 
 // Argument parsing
@@ -36,6 +36,10 @@ checked_args['main_args'].putAll(codeml_args)
 // Consensus arguments
 consensus_args = check_args_consensus(checked_args['usr_args'])
 checked_args['main_args'].putAll(consensus_args)
+
+// Transcript arguments
+transcript_args = check_args_transcript(checked_args['usr_args'])
+checked_args['main_args'].putAll(transcript_args)
 
 // Final arguments to use in pipeline
 final_args = checked_args['main_args']
@@ -137,6 +141,7 @@ workflow {
     include {stacks_pipeline} from './lib/modules/stacks_pipeline/workflows' params(final_args)
     include {codeml_pipeline} from './lib/modules/codeml_pipeline/workflows' params(final_args)
     include {consensus_pipeline} from './lib/modules/consensus_pipeline/workflows' params(final_args)
+    include {transcript_pipeline} from './lib/modules/transcript_pipeline/workflows'
 
     // Run QC pipeline
     qc_pipeline(seqs,
@@ -159,5 +164,9 @@ workflow {
     // Run consensus pipeline
     consensus_pipeline(seq_ref,
                        final_args['sub_workflows'])
+    
+    // Run transcriptome assembly
+    transcript_pipeline(seqs, 
+                        final_args['sub_workflows'])
 
 }
