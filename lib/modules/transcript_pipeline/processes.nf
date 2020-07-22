@@ -14,9 +14,9 @@ process run_trinity {
         val wf
 
     output:
-        tuple id, file("*.fasta"), emit: fasta
+        tuple id, file("*.Trinity.fasta"), emit: fasta
+        file "*SuperTrans*"
         file "*.gene_trans_map"
-        file "*.gtf"
 
     when:
         wf.contains('transcript_pipeline')
