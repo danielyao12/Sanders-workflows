@@ -4,6 +4,8 @@ process run_trinity {
 
     publishDir "${outdir}/trinity", mode: 'copy'
 
+    label 'trin'
+
     input:
         tuple id, file(reads)
         val outdir
@@ -121,6 +123,8 @@ process run_transdecoder_longorfs {
 
     publishDir "${outdir}/transdecoder", mode: 'copy'
 
+    label 'transd'
+
     input:
         tuple, id, file(fastaFile)
         val outdir
@@ -144,6 +148,8 @@ process run_blast {
     tag { id }
 
     publishDir "${outdir}/transdecoder/blast", mode: 'copy'
+
+    label 'homology'
 
     input:
         tuple id, path(longOrf)
@@ -176,6 +182,8 @@ process run_hmmer {
 
     publishDir "${outdir}/transdecoder/hmmer", mode: 'copy'
 
+    label 'homology'
+
     input:
         tuple id, path(longOrf)
         val outdir
@@ -203,6 +211,8 @@ process run_transdecoder_predict {
     tag { id }
 
     publishDir "${outdir}/transdecoder", mode: 'copy'
+
+    label 'transd'
 
     input:
         tuple id, file(fastaFile), path(longOrfs), path(blast), path(hmmer)
