@@ -20,7 +20,7 @@ def help_message_main() {
             - codeml_pipeline: Run CodeML using ETE-Evol
             - consensus_pipeline: Get consensus gene models from gene-capture data
             - varCall_pipeline: Call variants against reference genomes
-            - trinity_pipeline: Assemble RNA-seq data into transcriptomes
+            - transcript_pipeline: Assemble RNA-seq data into transcriptomes
 
         Required arguments: main.nf
         -profile <str>                    Which pipeline to run: slurm or standard
