@@ -87,7 +87,7 @@ process get_databases {
         val wf
 
     output:
-        tuple file("uniprot_sprot.fasta"), file('uniprot_sprot.fasta.nsi'), file('uniprot_sprot.fasta.nsd'), file('uniprot_sprot.fasta.nog'), file('uniprot_sprot.fasta.nin'), file('uniprot_sprot.fasta.nhr'), file('uniprot_sprot.fasta.nsq') emit: blast_db
+        tuple file("uniprot_sprot.fasta"), file('uniprot_sprot.fasta.nsi'), file('uniprot_sprot.fasta.nsd'), file('uniprot_sprot.fasta.nog'), file('uniprot_sprot.fasta.nin'), file('uniprot_sprot.fasta.nhr'), file('uniprot_sprot.fasta.nsq'), emit: blast_db
         tuple file('Pfam-A.hmm'), file('Pfam-A.hmm.h3i'), file('Pfam-A.hmm.h3f'), file('Pfam-A.hmm.h3m'), file('Pfam-A.hmm.h3p'), emit: pfam_db
 
     when:
