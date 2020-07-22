@@ -16,6 +16,7 @@ process run_trinity {
     output:
         tuple id, file("*.fasta"), emit: fasta
         file "*.gene_trans_map"
+        file "*.gtf"
 
     when:
         wf.contains('transcript_pipeline')
@@ -59,7 +60,7 @@ process run_cdhit {
     publishDir "${outdir}/cdhit", mode: 'copy'
 
     input:
-        path fastaFile
+        tuple id, path(fastaFile)
         val outdir
         val cdhit
         val wf
@@ -79,7 +80,7 @@ process run_cdhit {
 
 process get_databases {
     
-    publishDir "\${FASTDIR}/nf-databases", mode: 'copy'
+    publishDir "${FASTDIR}/nf-databases", mode: 'copy'
 
     input:
         val transdecoder
