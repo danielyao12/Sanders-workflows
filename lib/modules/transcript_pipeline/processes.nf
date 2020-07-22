@@ -172,7 +172,7 @@ process run_blast {
     -db \${FASTDIR}/nf-databases/uniprot_sprot.fasta \
     -max_target_seqs 1 \
     -outfmt 6 \
-    evalue 1e-5 \
+    -evalue 1e-5 \
     -num_threads ${task.cpus} > ${id}.outfmt6
     """
 
