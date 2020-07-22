@@ -170,7 +170,7 @@ process run_blast {
     """
     blastp \
     -query ${longOrf}/longest_orfs.pep \
-    -db \${FASTDIR}/nf-databases/uniprot_sprot.fasta \
+    -db ${fa} \
     -max_target_seqs 1 \
     -outfmt 6 \
     -evalue 1e-5 \
@@ -204,7 +204,7 @@ process run_hmmer {
     hmmscan \
     --cpu ${task.cpus} \
     --domtblout ${id}.domtblout \
-    \${FASTDIR}/nf-databases/Pfam-A.hmm \
+    ${hmm} \
     ${longOrf}/longest_orfs.pep
     """
 }
