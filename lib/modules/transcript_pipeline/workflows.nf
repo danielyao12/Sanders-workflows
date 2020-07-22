@@ -1,4 +1,4 @@
-include {run_trinity} from './processes'
+include {run_trinity; run_cdhit; get_databases; run_transdecoder_longorfs; run_blast; run_hmmer; run_transdecoder_predict} from './processes'
 
 workflow transcript_pipeline {
     take: seqs
