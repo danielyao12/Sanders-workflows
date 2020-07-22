@@ -126,7 +126,7 @@ process run_transdecoder_longorfs {
     label 'transd'
 
     input:
-        tuple, id, file(fastaFile)
+        tuple id, file(fastaFile)
         val outdir
         val transdecoder
         val wf
