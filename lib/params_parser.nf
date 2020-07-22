@@ -16,6 +16,7 @@ def empty_args_main_map() {
     args.threads = false
     args.email = false
     args.sub_workflows = false
+    args.submission_queue = false
 
     // Return map of empty arguments
     return args
@@ -35,6 +36,7 @@ def check_args_main(Map args) {
     final_args.lib_type = check_required_args_main(args, 'lib_type')
     final_args.seqs = seq_dir + '/' + seq_ext
     final_args.threads = check_required_args_main(args, 'threads')
+    final_args.submission_queue = check_required_args_main(args, 'submission_queue')
     
     // Check email is provided if profile == slurm
     if(workflow.profile == 'slurm' && !args.email) {

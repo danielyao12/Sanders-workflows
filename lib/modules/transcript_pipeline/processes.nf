@@ -154,6 +154,8 @@ process run_blast {
 
     label 'homology'
 
+    stageInMode 'copy'
+
     input:
         tuple id, path(longOrf), file(fa), file(nhr), file(nin), file(nog), file(nsd), file(nsi), file(nsq)
         val outdir
