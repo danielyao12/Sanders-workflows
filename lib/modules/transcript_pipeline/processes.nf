@@ -86,8 +86,8 @@ process get_databases {
         val wf
 
     output:
-        file "*.fasta*", optional: true
-        file "*.hmm*", optional: true
+        path "*.fasta*", optional: true
+        path "*.hmm*", optional: true
 
     when:
         wf.contains('transcript_pipeline') && transdecoder == true
@@ -127,7 +127,7 @@ process run_transdecoder_longorfs {
     label 'transd'
 
     input:
-        tuple id, file(fastaFile)
+        tuple id, path(fastaFile)
         val outdir
         val transdecoder
         val wf
@@ -159,7 +159,7 @@ process run_blast {
         val wf
 
     output:
-        tuple id, file("${id}.outfmt6")
+        tuple id, path("${id}.outfmt6")
 
     when:
         wf.contains('transcript_pipeline') && transdecoder == true
@@ -192,7 +192,7 @@ process run_hmmer {
         val wf
 
     output:
-        tuple id, file("${id}.domtblout")
+        tuple id, path("${id}.domtblout")
 
     when:
         wf.contains('transcript_pipeline') && transdecoder == true
@@ -216,14 +216,14 @@ process run_transdecoder_predict {
     label 'transd'
 
     input:
-        tuple id, file(fastaFile), path(longOrfs), path(blast), path(hmmer)
+        tuple id, path(fastaFile), path(longOrfs), path(blast), path(hmmer)
         val outdir
         val transdecoder
         val wf
 
     output:
         path longOrfs
-        file "*.{gff3,bed,pep,cds}"
+        path "*.{gff3,bed,pep,cds}"
 
     when:
         wf.contains('transcript_pipeline') && transdecoder == true
