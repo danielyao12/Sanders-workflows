@@ -87,8 +87,8 @@ process get_databases {
         val wf
 
     output:
-        file "*.fasta*", emit: blast_db
-        file "*.hmm*", emit: pfam_db
+        path "*.fasta*", emit: blast_db
+        path "*.hmm*", emit: pfam_db
 
     when:
         wf.contains('transcript_pipeline') && transdecoder == true
