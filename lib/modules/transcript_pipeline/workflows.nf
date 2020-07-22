@@ -40,14 +40,19 @@ workflow transcript_pipeline {
                               params.run_transdecoder,
                               workflow)
 
+    // Combine with database files
+    run_transdecoder_longorfs.out.path_longOrf.combine(get_databases.out.blast_db).set { in_blast }
+
+    run_transdecoder_longorfs.out.path_longOrf.combine(get_databases.out.pfam_db).set { in_pfam }
+
     // Blast
-    run_blast(run_transdecoder_longorfs.out.path_longOrf,
+    run_blast(in_blast,
               params.outdir,
               params.run_transdecoder,
               workflow)
 
     // HMMER
-    run_hmmer(run_transdecoder_longorfs.out.path_longOrf,
+    run_hmmer(in_pfam,
               params.outdir,
               params.run_transdecoder,
               workflow)

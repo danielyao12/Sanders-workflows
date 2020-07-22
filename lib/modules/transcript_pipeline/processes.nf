@@ -87,8 +87,8 @@ process get_databases {
         val wf
 
     output:
-        path "*.fasta*", optional: true
-        path "*.hmm*", optional: true
+        file "*.fasta*", emit: blast_db
+        file "*.hmm*", emit: pfam_db
 
     when:
         wf.contains('transcript_pipeline') && transdecoder == true
@@ -112,7 +112,8 @@ process get_databases {
         hmmpress Pfam-A.hmm
 
     else
-        echo "Databases exist"
+        cp \${FASTDIR}/nf-databases/uniprot_sprot.fasta* .
+        cp \${FASTDIR}/nf-databases/Pfam-A.hmm* .
     fi
     
     """
@@ -154,7 +155,7 @@ process run_blast {
     label 'homology'
 
     input:
-        tuple id, path(longOrf)
+        tuple id, path(longOrf), file(blast_db)
         val outdir
         val transdecoder
         val wf
@@ -187,7 +188,7 @@ process run_hmmer {
     label 'homology'
 
     input:
-        tuple id, path(longOrf)
+        tuple id, path(longOrf), file(pfam_db)
         val outdir
         val transdecoder
         val wf
