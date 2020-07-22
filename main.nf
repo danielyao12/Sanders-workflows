@@ -141,7 +141,7 @@ workflow {
     include {stacks_pipeline} from './lib/modules/stacks_pipeline/workflows' params(final_args)
     include {codeml_pipeline} from './lib/modules/codeml_pipeline/workflows' params(final_args)
     include {consensus_pipeline} from './lib/modules/consensus_pipeline/workflows' params(final_args)
-    include {transcript_pipeline} from './lib/modules/transcript_pipeline/workflows'
+    include {transcript_pipeline} from './lib/modules/transcript_pipeline/workflows' params(final_args)
 
     // Run QC pipeline
     qc_pipeline(seqs,
