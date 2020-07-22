@@ -1,4 +1,4 @@
-include {version_message; help_message_main; help_message_qc; help_message_stacks; help_message_codeml; help_message_consensus} from './messages.nf'
+include {version_message; help_message_main; help_message_qc; help_message_stacks; help_message_codeml; help_message_consensus; help_message_transcript} from './messages.nf'
 
 // Help/version
 def help_or_version(Map args, String version){
@@ -28,6 +28,10 @@ def help_or_version(Map args, String version){
     } else if(args.help == 'consensus_pipeline') {
         version_message(version)
         help_message_consensus()
+        System.exit(0)
+    } else if(args.help == 'transcript_pipeline') {
+        version_message(version)
+        help_message_transcript()
         System.exit(0)
     }
 
@@ -60,7 +64,7 @@ def check_subWorkflow_selection(String workflows) {
                     'codeml_pipeline',
                     'consensus_pipeline', 
                     'varCall_pipeline', 
-                    'transcriptome_pipeline' ]
+                    'transcript_pipeline' ]
     
     // Split passed workflows - convert stringArray to java.util.ArrayList
     lst = workflows.tokenize(',')
@@ -100,10 +104,13 @@ def print_subWorkflow_args(List workflow, Map args) {
     consensus_keys = ['reference', 'aligner_commands', 'mpileup_commands', 'norm_commands',
                       'filter_commands', 'view_commands', 'consensus_commands']
 
+    transcript_keys = [ 'trinity_optional', 'run_cdhit', 'run_transdecoder' ]
+
     def args_map = [ qc_pipeline: qc_keys, 
                      stacks_pipeline: stacks_keys, 
                      codeml_pipeline: codeml_keys, 
-                     consensus_pipeline: consensus_keys ]
+                     consensus_pipeline: consensus_keys,
+                     transcript_pipeline: transcript_keys ]
 
     // Print arguments to screen
     println """

@@ -20,7 +20,7 @@ def help_message_main() {
             - codeml_pipeline: Run CodeML using ETE-Evol
             - consensus_pipeline: Get consensus gene models from gene-capture data
             - varCall_pipeline: Call variants against reference genomes
-            - trinity_pipeline: Assemble RNA-seq data into transcriptomes
+            - transcript_pipeline: Assemble RNA-seq data into transcriptomes
 
         Required arguments: main.nf
         -profile <str>                    Which pipeline to run: slurm or standard
@@ -92,6 +92,11 @@ def help_message_qc() {
         Similarly, if you provide '--trim' but neither of the other two arguments,
         the software will complain. 
         
+        Example command:
+        nextflow run main.nf \\
+            ...\\
+            --trim \\
+            --detect_adapter
         """.stripIndent()
     )
 }
@@ -170,6 +175,7 @@ def help_message_codeml() {
 
         Example command:
         nextflow run main.nf \\
+            ... \\
             --sub_workflows codeml_pipeline \\
             --trees /path/to/tree.nw,/path/to/tree.nw \\
             --models 'M2,M1,M3,M0,bsA,bsA1' \\
@@ -202,6 +208,7 @@ def help_message_consensus() {
 
         Example command:
         nextflow run main.nf \\
+            ... \\
             --reference /path/to/reference_mappings.csv \\
             --aligner_commands '-M -B 2' \\
             --mpileup_commands '-d 120 -Q 20 -q 20'
@@ -209,6 +216,29 @@ def help_message_consensus() {
     )
 }
 
+def help_message_transcript() {
+    println(
+        """
+        Transcript assembly pipeline help page
+
+        This sub-workflow provides an avenue for simplified transcriptome assembly using Trinity.
+        Trinity is a de novo assembly tool which integrates nicely into an annotation pipeline
+        written by the same developers.
+
+        Optional arguments:
+        --trinity_optional <str>            Quoted string of extra commands to pass to Trinity
+        --run_cdhit
+        --run_transdecoder
+
+        Example command:
+        nextflow run main.nf \\
+            ... \\
+            --trinity_optional '--SS_lib_type FR --min_contig_length 500' \\
+            --run_cdhit \\
+            --run_transdecoder
+        """.stripIndent()
+    )
+}
 
 // Return message on completion
 def complete_message(String version){

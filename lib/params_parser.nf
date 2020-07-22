@@ -39,6 +39,7 @@ def check_args_main(Map args) {
     // Check email is provided if profile == slurm
     if(workflow.profile == 'slurm' && !args.email) {
         println('ERROR: UofA email required for SLURM profile')
+        System.exit(1)
     } else {
         final_args.email = args.email
     }
@@ -447,4 +448,42 @@ def check_args_consensus(Map args) {
     }
 
     return consensus_args
+}
+
+/*
+Functions: Transcriptome pipeline
+*/
+
+def empty_args_transcript_map() {
+    def args = [:]
+
+    args.trinity_optional = false
+    args.run_cdhit = false
+    args.run_transdecoder = false
+
+    return args
+    
+}
+
+def check_args_transcript(Map args) {
+
+    // Initialise empty arguments
+    transcript_args = empty_args_transcript_map()
+
+    def c_args = [
+        args.trinity_optional,
+        args.run_cdhit,
+        args.run_transdecoder
+    ]
+
+    if(args.sub_workflows.contains('transcript_pipeline') ){
+        transcript_args.trinity_optional = args.trinity_optional ?: false
+        transcript_args.run_cdhit = args.run_cdhit ?: false
+        transcript_args.run_transdecoder = args.run_transdecoder ?: false
+    } else if(! args.sub_workflows.contains('transcript_pipeline') && c_args.any {it == true}) {
+        println("ERROR: Arguments for the transcript assembly sub-workflow have been provided without specifying the '--sub_workflows transcript_pipeline' argument.")
+        System.exit(1)
+    }
+
+    return transcript_args
 }
