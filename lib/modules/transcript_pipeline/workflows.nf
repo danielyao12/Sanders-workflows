@@ -53,7 +53,7 @@ workflow transcript_pipeline {
               workflow)
 
     // Joing Fasta + LongORF directory + BLAST + HMMER
-    fasta.join(run_transdecoder_longorfs.out.path_longOrf.join(run_blast.out.join(run_hmmer.out, by: [0]), by: [0]), by: [0]).set { input }
+    id_fasta.join(run_transdecoder_longorfs.out.path_longOrf.join(run_blast.out.join(run_hmmer.out, by: [0]), by: [0]), by: [0]).set { input }
 
     // Transdecoder Predict
     run_transdecoder_predict(input,
