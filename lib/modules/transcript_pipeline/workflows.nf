@@ -6,63 +6,70 @@ workflow transcript_pipeline {
 
     main:
 
-    // Assemble RNA-seq data
-    run_trinity(seqs,
-                params.lib_type,
-                params.outdir,
-                params.trinity_optional,
-                workflow)
+    if(workflow == 'transcript_pipeline') {
 
-    // Remove redundancy - taken from: https://github.com/trinityrnaseq/trinityrnaseq/wiki/There-are-too-many-transcripts!-What-do-I-do%3F
-    run_cdhit(run_trinity.out.fasta,
-              params.outdir,
-              params.run_cdhit,
-              workflow)
+        // Assemble RNA-seq data
+        run_trinity(seqs,
+                    params.lib_type,
+                    params.outdir,
+                    params.trinity_optional,
+                    workflow)
 
-    // Conditional: Assign outputs to neutral variable name
-    if(params.run_cdhit) {
-
-        run_cdhit.out.fasta.set { id_fasta }
-
-    } else {
-
-        run_trinity.out.fasta.set { id_fasta }
-
-    }
-
-    // Download databases - Only if Transdecoder == true
-    get_databases(params.run_transdecoder,
+        // Remove redundancy - taken from: https://github.com/trinityrnaseq/trinityrnaseq/  wiki/There-are-too-many-transcripts!-What-do-I-do%3F
+        run_cdhit(run_trinity.out.fasta,
+                  params.outdir,
+                  params.run_cdhit,
                   workflow)
 
-    // Transdecoder Long orfs
-    run_transdecoder_longorfs(id_fasta,
-                              params.outdir,
-                              params.run_transdecoder,
-                              workflow)
+        // Conditional: Assign outputs to neutral variable name
+        if(params.run_cdhit) {
 
-    // Combine with database files
-    run_transdecoder_longorfs.out.path_longOrf.combine(get_databases.out.blast_db).set { in_blast }
+            run_cdhit.out.fasta.set { id_fasta }
 
-    run_transdecoder_longorfs.out.path_longOrf.combine(get_databases.out.pfam_db).set { in_pfam }
+        } else {
 
-    // Blast
-    run_blast(in_blast,
-              params.outdir,
-              params.run_transdecoder,
-              workflow)
+            run_trinity.out.fasta.set { id_fasta }
 
-    // HMMER
-    run_hmmer(in_pfam,
-              params.outdir,
-              params.run_transdecoder,
-              workflow)
+        }
 
-    // Joing Fasta + LongORF directory + BLAST + HMMER
-    id_fasta.join(run_transdecoder_longorfs.out.path_longOrf.join(run_blast.out.join(run_hmmer.out, by: [0]), by: [0]), by: [0]).set { input }
+        // Download databases - Only if Transdecoder == true
+        get_databases(params.run_transdecoder,
+                      workflow)
 
-    // Transdecoder Predict
-    run_transdecoder_predict(input,
-                             params.outdir,
-                             params.run_transdecoder,
-                             workflow)
+        // Transdecoder Long orfs
+        run_transdecoder_longorfs(id_fasta,
+                                  params.outdir,
+                                  params.run_transdecoder,
+                                  workflow)
+
+        // Combine with database files
+        run_transdecoder_longorfs.out.path_longOrf.combine(get_databases.out.blast_db).set { in_blast }
+
+        run_transdecoder_longorfs.out.path_longOrf.combine(get_databases.out.pfam_db).set { in_pfam }
+
+        // Blast
+        run_blast(in_blast,
+                  params.outdir,
+                  params.run_transdecoder,
+                  workflow)
+
+        // HMMER
+        run_hmmer(in_pfam,
+                  params.outdir,
+                  params.run_transdecoder,
+                  workflow)
+
+        // Joing Fasta + LongORF directory + BLAST + HMMER
+        id_fasta.join(run_transdecoder_longorfs.out.path_longOrf.join(run_blast.out.join(run_hmmer.out, by: [0]), by: [0]), by: [0]).set { input }
+
+        // Transdecoder Predict
+        run_transdecoder_predict(input,
+                                 params.outdir,
+                                 params.run_transdecoder,
+                                 workflow)
+    } else {
+        break;
+    }
+
+    
 }
