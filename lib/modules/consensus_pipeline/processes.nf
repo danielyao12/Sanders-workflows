@@ -80,6 +80,8 @@ process run_consensus {
 
     publishDir "${outdir}/consensus/02_consensus/${ref.simpleName}", mode: 'copy'
 
+    label 'consensus'
+
     input:
         tuple id, file(seqs), path(ref), file(idx)
         val outdir

@@ -3,6 +3,8 @@ process run_codeml {
 
     publishDir "${outdir}/codeml_ete-evol", mode: 'copy'
 
+    label 'codeml'
+
     input:
         tuple id, file(seqs), tree, mark
         val outdir
