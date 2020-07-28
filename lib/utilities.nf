@@ -49,7 +49,7 @@ def check_required_args_main(Map args, String args_name){
         if(args_name == 'threads') {
             return 2
         } else if(args_name == 'submission_queue') {
-            return 'batch'
+            return 'cpu'
         } else {
             println "ERROR: Missing argument '--" + args_name + "'"
             System.exit(1)
