@@ -4,7 +4,9 @@ nextflow.preview.dsl=2
 version = '1.0'
 
 // Include helper functions here
-include {empty_args_main_map; check_args_main; check_args_QC; check_args_stacks; check_args_codeml; check_args_consensus; check_args_transcript} from './lib/params_parser'
+include {empty_args_main_map; check_args_main; check_args_QC; check_args_stacks; 
+         check_args_codeml; check_args_consensus; check_args_transcript;
+         check_args_variant} from './lib/params_parser'
 include {help_or_version; print_subWorkflow_args} from './lib/utilities'
 
 // Argument parsing
@@ -40,6 +42,10 @@ checked_args['main_args'].putAll(consensus_args)
 // Transcript arguments
 transcript_args = check_args_transcript(checked_args['usr_args'])
 checked_args['main_args'].putAll(transcript_args)
+
+// Variant args
+variant_args = check_args_variant(checked_args['usr_args'])
+checked_args['main_args'].putAll(variant_args)
 
 // Final arguments to use in pipeline
 final_args = checked_args['main_args']
@@ -131,9 +137,36 @@ if(final_args['sub_workflows'].contains('consensus_pipeline')) {
         .set { seq_ref }
 }
 
-/*
-Call to sub-workflows
-*/
+// Variant calling pipeline arguments - [...]
+if(final_args['sub_workflows'].contains('variant_pipeline')) {
+    // File path provided
+    if(final_args.ref instanceof java.lang.String) {
+        Channel
+            .from(final_args.ref)
+            .set { ch }
+        seqs
+            .combine(ch)
+            .set { var_seq_ref }
+    } else if(final_args.ref instanceof java.util.ArrayList) {
+        Channel
+            .fromList(final_args.ref)
+            .map { val ->
+                return tuple(val[0], val[1])
+            }
+        .set { ch }
+        seqs
+            .join(ch, by: [0])
+            .set { var_seq_ref }
+    }
+} else {
+    Channel
+        .empty()
+        .set { var_seq_ref }
+}
+
+// /*
+// Call to sub-workflows
+// */
 workflow {
 
     // Load workflows
@@ -142,6 +175,7 @@ workflow {
     include {codeml_pipeline} from './lib/modules/codeml_pipeline/workflows' params(final_args)
     include {consensus_pipeline} from './lib/modules/consensus_pipeline/workflows' params(final_args)
     include {transcript_pipeline} from './lib/modules/transcript_pipeline/workflows' params(final_args)
+    include {variant_pipeline} from './lib/modules/variant_pipeline/workflows' params(final_args)
 
     // Run QC pipeline
     qc_pipeline(seqs,
@@ -168,5 +202,9 @@ workflow {
     // Run transcriptome assembly
     transcript_pipeline(seqs, 
                         final_args['sub_workflows'])
+
+    // Run variant calling
+    variant_pipeline(var_seq_ref,
+                     final_args['sub_workflows'])
 
 }
