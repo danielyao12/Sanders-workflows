@@ -1,30 +1,26 @@
-include {version_message; help_message_main; help_message_qc; help_message_stacks; help_message_codeml; help_message_consensus; help_message_transcript} from './messages.nf'
+include {version_message; help_message_main; help_message_qc; help_message_stacks; 
+         help_message_codeml; help_message_consensus; help_message_transcript;
+         help_message_variant} from './messages.nf'
 
 // Help/version
 def help_or_version(Map args, String version){
     // Show help message
     if (args.help == true) {
-
         version_message(version)
         help_message_main()
         System.exit(0)
-
     } else if(args.help == 'qc_pipeline') {
-        
         version_message(version)
         help_message_qc()
         System.exit(0)
-        
     } else if(args.help == 'stacks_pipeline') {
         version_message(version)
         help_message_stacks()
         System.exit(0)
-
     } else if(args.help == 'codeml_pipeline') {
         version_message(version)
         help_message_codeml()
         System.exit(0)
-        
     } else if(args.help == 'consensus_pipeline') {
         version_message(version)
         help_message_consensus()
@@ -32,6 +28,10 @@ def help_or_version(Map args, String version){
     } else if(args.help == 'transcript_pipeline') {
         version_message(version)
         help_message_transcript()
+        System.exit(0)
+    } else if(args.help == 'variant_pipeline') {
+        version_message(version)
+        help_message_variant()
         System.exit(0)
     }
 
@@ -65,7 +65,7 @@ def check_subWorkflow_selection(String workflows) {
                     'stacks_pipeline',
                     'codeml_pipeline',
                     'consensus_pipeline', 
-                    'varCall_pipeline', 
+                    'variant_pipeline', 
                     'transcript_pipeline' ]
     
     // Split passed workflows - convert stringArray to java.util.ArrayList
@@ -108,11 +108,17 @@ def print_subWorkflow_args(List workflow, Map args) {
 
     transcript_keys = [ 'trinity_optional', 'run_cdhit', 'run_transdecoder' ]
 
+    variant_keys = ['ref', 'caller', 'opt_bwa',
+                    'opt_haplotypeCaller', 'opt_combineGVCF', 
+                    'opt_genotypeGVCF', 'opt_mpileup', 'opt_norm', 
+                    'tidy', 'merge']
+
     def args_map = [ qc_pipeline: qc_keys, 
                      stacks_pipeline: stacks_keys, 
                      codeml_pipeline: codeml_keys, 
                      consensus_pipeline: consensus_keys,
-                     transcript_pipeline: transcript_keys ]
+                     transcript_pipeline: transcript_keys,
+                     variant_pipeline: variant_keys ]
 
     // Print arguments to screen
     println """
