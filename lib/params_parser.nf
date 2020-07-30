@@ -489,3 +489,126 @@ def check_args_transcript(Map args) {
 
     return transcript_args
 }
+
+/*
+Functions: Variant pipeline
+*/
+
+def empty_args_variant_map() {
+    def args = [:]
+
+    args.ref = false
+    args.caller = false
+    args.tidy = false
+    args.merge = false
+    args.opt_bwa = false
+    args.opt_haplotypeCaller = false
+    args.opt_combineGVCF = false
+    args.opt_genotypeGVCF = false
+    args.opt_mpileup = false
+    args.opt_norm = false
+
+    return args
+}
+
+def check_args_variant(Map args) {
+
+    variant_args = empty_args_variant_map()
+
+    def c_args = [
+        args.ref,
+        args.caller,
+        args.tidy,
+        args.merge,
+        args.opt_bwa,
+        args.opt_haplotypeCaller,
+        args.opt_combineGVCF,
+        args.opt_genotypeGVCF,
+        args.opt_mpileup,
+        args.opt_norm
+    ]
+
+    if(args.sub_workflows.contains('variant_pipeline') ){
+
+        // Required arguments
+        if(!args.caller) {
+            println("ERROR: No argument passed to `--caller`")
+            System.exit(1)
+        } else if(args.caller == true) {
+            println("ERROR: `--caller` argument passed with no value. Please select either gatk or bcftools.")
+            System.exit(1)
+        } else if(args.caller == 'bcftools' && args.merge) {
+            println("ERROR: Joint genotyping with BCFtools is not supported. Invalid combination of '--caller bcftools' and '--merge'")
+            System.exit(1)
+        } else {
+            variant_args.caller = args.caller
+        }
+
+        // Is there an argument to --reference
+        if(!args.ref){
+            println("ERROR: No argument passed to `--ref`")
+            System.exit(1)
+        } else if(args.ref == true){
+            println("ERROR: '--ref' argument has been requested with no input.Check your command.")
+            System.exit(1)
+        }
+
+        // Argument must be a file regardless of type (fasta/csv) - check it exists
+        try {
+            File file = new File(args.ref)
+            assert file.exists()
+        } catch (AssertionError e) {
+            println("ERROR: File passed to '--ref' doesn't exist. Needs to be either a reference fasta file or a CSV file with sample-reference pairings\nError message: " + e.getMessage())
+            System.exit(1)
+        }
+
+        // CSV - return list of tuples [ [sampleID, ref_path], [..., ...]]
+        if(args.ref.endsWith('csv')){
+            File file = new File(args.ref)
+            def ref_lst = []
+            def ref_name = []
+
+            // Append tuple to list
+            file.eachLine { line ->
+                def parts = line.split(",")
+                ref_lst.addAll( [ [parts[0], parts[1]] ] )
+                ref_name.add(parts[1])
+            }
+
+            // Check --merged hasn't been provided with CSV with multiple references
+            if(ref_name.unique().size() > 1 && args.merge) {
+                println("ERROR: CSV file contains multiple different reference genomes and '--merge' has been provided. It's not possible to merge VCFs from different genomes")
+                System.exit(1)
+            }
+            
+            variant_args.ref = ref_lst
+
+        // Not CSV - check it has valid extension for genomic fasta
+        } else if(args.ref.endsWith('fa') || args.ref.endsWith('fasta') || args.ref.endsWith('fna')){
+            
+            variant_args.ref = args.ref
+
+        // Not CSV or Fasta - error
+        } else {
+            println("ERROR: File passed to `--ref` exists but isn't a CSV with extension 'csv' or a FASTA with extensions 'fa', 'fasta' or 'fna'. Please check your input")
+            System.exit(1)
+        }
+
+        // Optional arguments
+        variant_args.opt_bwa = args.opt_bwa ?: false
+        variant_args.opt_haplotypeCaller = args.opt_haplotypeCaller ?: false
+        variant_args.opt_combineGVCF = args.opt_combineGVCF ?: false
+        variant_args.opt_genotypeGVCF = args.opt_genotypeGVCF ?: false
+        variant_args.opt_mpileup = args.opt_mpileup ?: false
+        variant_args.opt_norm = args.opt_norm ?: false
+        variant_args.tidy = args.tidy ?: false
+        variant_args.merge = args.merge ?: false
+
+    } else if(! args.sub_workflows.contains('variant_pipeline') && c_args.any {it == true}) {
+        println("ERROR: Arguments for the variant sub-workflow have been provided without specifying the '--sub_workflows variant_pipeline' argument.")
+        System.exit(1)
+    }
+
+    return variant_args
+
+}
