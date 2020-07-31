@@ -77,38 +77,39 @@ workflow variant_pipeline {
                                     params.opt_mpileup,
                                     params.opt_norm,
                                     workflow)
-        if(params.merge) {
-            // [ id, ref, [idx], vcf, csi ]
-            clean_ref
-                .join(run_variantCalling_bcftools.out, by: [0])
-                .set { temp }
+        run_variantCalling_bcftools.out.collect().set { cleanup_ch }
+        // if(params.merge) {
+        //     // [ id, ref, [idx], vcf, csi ]
+        //     clean_ref
+        //         .join(run_variantCalling_bcftools.out, by: [0])
+        //         .set { temp }
 
-            // [ 'vcf1 vcf2 vcf3 ... vcfn' ]
-            temp
-                .collect { it[3] }
-                .map { it.join(' ') }
-                .set { vcf_str }
+        //     // [ 'vcf1 vcf2 vcf3 ... vcfn' ]
+        //     temp
+        //         .collect { it[3] }
+        //         .map { it.join(' ') }
+        //         .set { vcf_str }
             
-            // VCF and CSI files
-            temp
-                .collect{ tuple(it[3], it[4]) }
-                .toList()
-                .set { vcf_files }
+        //     // VCF and CSI files
+        //     temp
+        //         .collect{ tuple(it[3], it[4]) }
+        //         .toList()
+        //         .set { vcf_files }
 
-            // Reference file + idx files
-            temp
-                .take(1)
-                .map {return tuple(it[1], it[2])}
-                .set { ref_files }
+        //     // Reference file + idx files
+        //     temp
+        //         .take(1)
+        //         .map {return tuple(it[1], it[2])}
+        //         .set { ref_files }
 
-            ref_files.combine(vcf_files.combine(vcf_str)).set { merge_input }
-            run_bcftools_merge(merge_input,
-                               params.outdir,
-                               workflow)
-            run_bcftools_merge.out.set { cleanup_ch }
-        } else {
-            run_variantCalling_bcftools.out.collect().set { cleanup_ch }
-        }
+        //     ref_files.combine(vcf_files.combine(vcf_str)).set { merge_input }
+        //     run_bcftools_merge(merge_input,
+        //                        params.outdir,
+        //                        workflow)
+        //     run_bcftools_merge.out.set { cleanup_ch }
+        // } else {
+        //     run_variantCalling_bcftools.out.collect().set { cleanup_ch }
+        // }
     } else {
         run_gatk_haplotypeCaller(clean_var_input,
                                  params.outdir,

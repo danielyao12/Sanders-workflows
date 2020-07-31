@@ -537,6 +537,9 @@ def check_args_variant(Map args) {
         } else if(args.caller == true) {
             println("ERROR: `--caller` argument passed with no value. Please select either gatk or bcftools.")
             System.exit(1)
+        } else if(args.caller == 'bcftools' && args.merge) {
+            println("ERROR: Joint genotyping with BCFtools is not supported. Invalid combination of '--caller bcftools' and '--merge'")
+            System.exit(1)
         } else {
             variant_args.caller = args.caller
         }
