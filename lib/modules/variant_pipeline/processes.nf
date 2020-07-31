@@ -103,7 +103,7 @@ process run_variantCalling_bcftools {
         bcftools call --gvcf 0 -Ou -m | \
         bcftools norm ${opt_n} -f ${ref} -Ou | \
         bcftools sort --temp-dir \${PWD} -Ou | \
-        bcftools convert --gvcf ${ref} -Oz -o ${id}.vcf.gz
+        bcftools convert --gvcf --fasta-ref ${ref} -Oz -o ${id}.vcf.gz
 
         bcftools index ${id}.vcf.gz
         """
