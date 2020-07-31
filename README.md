@@ -7,7 +7,7 @@ the Sanders research group. The current workflows I am looking to implement are:
 * [x] Stacks (v2) pipeline
 * [x] CodeML
 * [x] Consensus calling
-* [ ] Variant calling
+* [x] Variant calling
 * [x] Transcriptome assembly pipeline
 
 If there are any other analyses that you are interested in having as a workflow,
