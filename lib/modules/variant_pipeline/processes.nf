@@ -89,7 +89,7 @@ process run_variantCalling_bcftools {
         val wf
     
     output:
-        tuple file("${id}.vcf.gz"), file("${id}.vcf.gz.csi")
+        tuple id, file("${id}.vcf.gz"), file("${id}.vcf.gz.csi")
 
     when:
         wf.contains('variant_pipeline')
@@ -99,12 +99,37 @@ process run_variantCalling_bcftools {
         def opt_n = opt_norm ?: ''
 
         """
-        bcftools mpileup -Ou ${opt_m} -f ${ref} ${bam} | \
-        bcftools call -Ou -c - | \
+        bcftools mpileup --gvcf 5 -Ou ${opt_m} -f ${ref} ${bam} | \
+        bcftools call --gvcf 5 -Ou -c - | \
         bcftools norm ${opt_n} -f ${ref} -Ou | \
         bcftools sort --temp-dir \${PWD} -Oz -o ${id}.vcf.gz
 
         bcftools index ${id}.vcf.gz
+        """
+}
+
+process run_bcftools_merge {
+    tag { 'bcftools merge' }
+
+    publishDir "${outdir}/variants/02_variants/${ref.simpleName}/bcftools_merge", mode: 'copy'
+
+    label 'varCall'
+
+    input:
+        tuple path(ref), file(idx), file(data), val(str)
+        val outdir
+        val wf
+
+    output:
+        tuple file("merged.vcf.gz"), file("merged.vcf.gz.csi")
+    
+    when:
+        wf.contains('variant_pipeline')
+    
+    script:
+        """
+        bcftools merge -g ${ref} -Oz -o merged.vcf.gz ${str}
+        bcftools index merged.vcf.gz
         """
 }
 
