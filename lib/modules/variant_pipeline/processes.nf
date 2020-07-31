@@ -10,7 +10,7 @@ process run_index {
         val wf
 
     output:
-        tuple pth, file("${ref.baseName}*.{amb,ann,bwt,pac,sa,fai,dict}"), val("${pth}/${ref}"), emit: refs
+        tuple pth, file("${ref.baseName}*.{amb,ann,64,32,pac,0123,fai,dict}"), val("${pth}/${ref}"), emit: refs
 
     when:
         wf.contains('variant_pipeline')
@@ -23,12 +23,12 @@ process run_index {
             samtools faidx ${ref}
         fi 
 
-        if [[ -f ${pth}/${ref}.bwt ]]; then
-            cp ${pth}/${ref}.bwt \${PWD}
+        if [[ -f ${pth}/${ref}.bwt.2bit.64 ]]; then
+            cp ${pth}/${ref}.bwt* \${PWD}
             cp ${pth}/${ref}.amb \${PWD}
             cp ${pth}/${ref}.ann \${PWD}
             cp ${pth}/${ref}.pac \${PWD}
-            cp ${pth}/${ref}.sa \${PWD}
+            cp ${pth}/${ref}.0123 \${PWD}
         else 
             bwa-mem2 index ${ref}
         fi
