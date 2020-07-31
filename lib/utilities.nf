@@ -151,7 +151,7 @@ def print_subWorkflow_args(List workflow, Map args) {
 
         sub_map.each { key, val ->
             if(val instanceof java.util.ArrayList) {
-                if(wf == 'consensus_pipeline') {
+                if(wf == 'consensus_pipeline' || wf == 'variant_pipeline') {
                     println "${key}:"
                     val.each { v ->
                         println "  ${v[0]} -> ${v[1]}"
