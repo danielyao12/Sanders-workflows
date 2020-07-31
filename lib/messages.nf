@@ -34,7 +34,7 @@ def help_message_main() {
 
         SLURM profile:
         --email <str>                     Email address when '--profile slurm'
-        --submission_queue                Partition to submit jobs to (default: 'batch')
+        --submission_queue                Partition to submit jobs to (default: 'cpu')
 
         If you are interested in seeing your resource usage, provide the
         '-with-report' and/or '-with-timeline' arguments. The trace argument is 
