@@ -100,7 +100,7 @@ process run_variantCalling_bcftools {
 
         """
         bcftools mpileup --gvcf 5 -Ou ${opt_m} -f ${ref} ${bam} | \
-        bcftools call --gvcf 5 -Ou | \
+        bcftools call --gvcf 5 -Ou -m | \
         bcftools norm ${opt_n} -f ${ref} -Ou | \
         bcftools sort --temp-dir \${PWD} -Oz -o ${id}.vcf.gz
 
