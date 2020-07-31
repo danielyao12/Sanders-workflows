@@ -241,6 +241,36 @@ def help_message_transcript() {
     )
 }
 
+def help_message_variant() {
+    println(
+        """
+        Variant calling pipeline help page
+
+        A sub-workflow for variant calling using GATK or BCFtools.
+
+        Required arguments:
+        --ref <str/file-path>               File path to either a reference fasta or CSV file with sample-reference pairings
+        --caller <str>                      Which variant calling method to use - gatk/bcftools
+
+        Optional arguments:
+        --tidy                              Pass this argument to remove BAM files to save disk space
+        --merge                             Pass this argument if you want to joint call variants using GATK (not supported for BCFtools)
+        --opt_bwa <str>                     Quoted string of optional commands to pass to aligner
+        --opt_haplotypeCaller <str>         Quoted string of optional commands to pass to GATKs HaplotypeCaller
+        --opt_combineGVCF <str>             Quoted string of optional commands to pass to GATKs CombineGVCF
+        --opt_genotypeGVCF <str>            Quoted string of optional commands to pass to GATKs GenotypeGVCF
+        --opt_mpileup <str>                 Quoted string of optional commands to pass to BCFtools mpileup
+        --opt_norm <str>                    Quoted string of optional commands to pass to BCFtools norm
+
+        Example command:
+        nextflow run main.nf \\
+            ... \\
+            --ref ref-sample-pairs.csv \\
+            --caller gatk
+        """.stripIndent()
+    )
+}
+
 // Return message on completion
 def complete_message(String version){
     // Display complete message
