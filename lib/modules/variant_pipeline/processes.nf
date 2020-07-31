@@ -65,21 +65,19 @@ process run_bwa {
         def opt_args = opt ?: ''
 
         """
-        echo "bwa-mem2 mem ${opt_args} -t ${task.cpus} ${ref} ${seqs} | \
+        bwa-mem2 mem ${opt_args} -t ${task.cpus} ${ref} ${seqs} | \
         samtools sort -O BAM -o ${id}.bam
 
         samtools index -@ ${task.cpus} ${id}.bam
 
-        samtools flagstat -@ ${task.cpus} ${id}.bam > ${id}.flagstat" > ${id}.flagstat
-
-        touch ${id}.bam ${id}.bam.bai
+        samtools flagstat -@ ${task.cpus} ${id}.bam > ${id}.flagstat
         """        
 }
 
 process run_variantCalling_bcftools {
     tag { id } 
 
-    publishDir "${outdir}/variants/02_variants/${ref.simpleName}", mode: 'copy'
+    publishDir "${outdir}/variants/02_variants/${ref.simpleName}/bcftools", mode: 'copy'
 
     label 'varCall'
 
@@ -91,8 +89,7 @@ process run_variantCalling_bcftools {
         val wf
     
     output:
-        file("${id}.vcf.gz")
-        file("${id}.vcf.gz.csi")
+        tuple file("${id}.vcf.gz"), file("${id}.vcf.gz.csi")
 
     when:
         wf.contains('variant_pipeline')
@@ -102,14 +99,12 @@ process run_variantCalling_bcftools {
         def opt_n = opt_norm ?: ''
 
         """
-        echo "bcftools mpileup -Ou ${opt_m} -f ${ref} ${bam} | \
+        bcftools mpileup -Ou ${opt_m} -f ${ref} ${bam} | \
         bcftools call -Ou -c - | \
         bcftools norm ${opt_n} -f ${ref} -Ou | \
         bcftools sort --temp-dir \${PWD} -Oz -o ${id}.vcf.gz
 
-        bcftools index ${id}.vcf.gz" > ${id}.vcf.gz
-
-        touch ${id}.vcf.gz.tbi
+        bcftools index ${id}.vcf.gz
         """
 }
 
@@ -135,15 +130,13 @@ process run_gatk_haplotypeCaller {
     script:
     def opt = opt_haplotypeCaller ?: ''
     """
-    echo "gatk HaplotypeCaller \
+    gatk HaplotypeCaller \
     --input ${bam} \
     --output ${id}.g.vcf.gz \
     --reference ${ref} \
     --native-pair-hmm-threads ${task.cpus} \
     --tmp-dir \${PWD} \
-    -ERC GVCF" > ${id}.g.vcf.gz
-
-    touch ${id}.g.vcf.gz.tbi
+    -ERC GVCF
     """
 }
 
@@ -161,7 +154,7 @@ process run_gatk_combine {
         val wf
 
     output:
-        tuple file(ref), file(idx), file("combined.g.vcf.gz"), emit: combined
+        tuple file(ref), file(idx), file("combined.g.vcf.gz"), file("combined.g.vcf.gz.tbi"), emit: combined
 
     when:
         wf.contains('variant_pipeline')
@@ -169,38 +162,110 @@ process run_gatk_combine {
     script:
     def opt = opt_combine ?: ''
     """
-    echo "gatk CombineGVCFs \
+    gatk CombineGVCFs \
     ${opt} \
     --reference ${ref} \
     ${str} \
-    --output combined.g.vcf.gz" > combined.g.vcf.gz
+    --output combined.g.vcf.gz
     """
 }
 
 process run_genotypeGVCF_combined {
+    tag { 'genotypeCombined' } 
+
+    publishDir "${outdir}/variants/02_variants/${ref.simpleName}/genotypeGVCF", mode: 'copy'
+
+    label 'varCall'
+
+    input:
+        tuple path(ref), file(idx), file(vcf), file(tbi)
+        val outdir
+        val opt_genotype
+        val wf
+
+    output:
+        tuple file("genotyped.vcf.gz"), file("genotyped.vcf.gz.tbi")
+
+    when:
+        wf.contains('variant_pipeline')
+
+    script:
+        def opt = opt_genotype ?: ''
+        """
+        gatk GenotypeGVCFs \
+        --reference ${ref} \
+        --variant ${vcf} \
+        --output genotyped.vcf.gz \
+        --include-non-variant-sites \
+        ${opt}
+        """
 
 }
 
 process run_genotypeGVCF {
-    
+    tag { id } 
+
+    publishDir "${outdir}/variants/02_variants/${ref.simpleName}/genotypeGVCF", mode: 'copy'
+
+    label 'varCall'
+
+    input:
+        tuple id, path(ref), file(idx), file(vcf), file(tbi)
+        val outdir
+        val opt_genotype
+        val wf
+
+    output:
+        tuple file("${id}.genotyped.vcf.gz"), file("${id}.genotyped.vcf.gz.tbi")
+
+    when:
+        wf.contains('variant_pipeline')
+
+    script:
+        def opt = opt_genotype ?: ''
+        """
+        gatk GenotypeGVCFs \
+        --reference ${ref} \
+        --variant ${vcf} \
+        --output ${id}.genotyped.vcf.gz \
+        --include-non-variant-sites \
+        ${opt}
+        """
 }
 
-// process run_variant_clean_up {
+process run_variant_clean_up {
 
-//     input:
-//         file fasta
-//         val cleanup
-//         val outdir
-//         val wf
+    input:
+        file vcfs
+        val tidy
+        val caller
+        val combine
+        val outdir
+        val wf
 
-//     when:
-//         wf.contains('consensus_pipeline') && cleanup == true
+    when:
+        wf.contains('variant_pipeline') && tidy == true
 
-//     script:
-//         """
-//         find ${outdir} -type f -name '*.bam' -delete
-//         find ${outdir} -type f -name '*.bam.bai' -delete
-//         find ${outdir} -type f -name '*.vcf.gz' -delete
-//         """
-
-// }
+    script:
+    if(caller == 'bcftools') {
+        """
+        find ${outdir} -type f -name '*.bam' -delete
+        find ${outdir} -type f -name '*.bam.bai' -delete
+        """
+    } else {
+        if(combine){
+            """
+            find ${outdir} -type f -name '*.bam' -delete
+            find ${outdir} -type f -name '*.bam.bai' -delete
+            find ${outdir} -type d -name 'haplotypeCaller' -exec rm -r {} +
+            find ${outdir} -type d -name 'combineGVCF' -exec rm -r {} +
+            """
+        } else {
+            """
+            find ${outdir} -type f -name '*.bam' -delete
+            find ${outdir} -type f -name '*.bam.bai' -delete
+            find ${outdir} -type d -name 'haplotypeCaller' -exec rm -r {} +
+            """
+        }
+    }
+}

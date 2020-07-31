@@ -1,6 +1,6 @@
 include {run_index; run_bwa; run_variantCalling_bcftools; 
 run_gatk_haplotypeCaller; run_gatk_combine;
-run_genotypeGVCF_combined; run_genotypeGVCF} from './processes'
+run_genotypeGVCF_combined; run_genotypeGVCF; run_variant_clean_up} from './processes'
 
 workflow variant_pipeline {
     take: seqs
@@ -77,6 +77,8 @@ workflow variant_pipeline {
                                     params.opt_mpileup,
                                     params.opt_norm,
                                     workflow)
+
+        run_variantCalling_bcftools.out.collect().set { cleanup_ch }
     } else {
         run_gatk_haplotypeCaller(clean_var_input,
                                  params.outdir,
@@ -115,16 +117,34 @@ workflow variant_pipeline {
                              params.outdir,
                              params.opt_combineGVCF,
                              workflow)
+
+            run_genotypeGVCF_combined(run_gatk_combine.out.combined,
+                                      params.outdir,
+                                      params.opt_genotypeGVCF,
+                                      workflow)
             
-        } //else {
-        //    .
-        // }
+            run_genotypeGVCF_combined.out.set{ cleanup_ch }
+            
+        } else {
+           // Join HaplotypeCaller output with reference info
+           clean_ref
+                .join(run_gatk_haplotypeCaller.out.vcf_files, by: [0])
+                .set { input_genotype }
+
+            run_genotypeGVCF(input_genotype,
+                             params.outdir,
+                             params.opt_genotypeGVCF,
+                             workflow)
+
+            run_genotypeGVCF.out.collect().set { cleanup_ch }
+        }
     }
 
     // Collect all fasta files so the final step happens last
-    // run_consensus.out.fasta.collect().set { ch }
-    // run_consensus_clean_up(ch,
-    //                        params.cleanup,
-    //                        params.outdir,
-    //                        workflow)
+    run_variant_clean_up(cleanup_ch,
+                         params.tidy,
+                         params.caller,
+                         params.merge,
+                         params.outdir,
+                         workflow)
 }
