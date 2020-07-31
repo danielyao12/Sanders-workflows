@@ -1,4 +1,4 @@
-include {run_index; run_bwa; run_variantCalling_bcftools; 
+include {run_index; run_bwa; run_variantCalling_bcftools; run_bcftools_merge; 
 run_gatk_haplotypeCaller; run_gatk_combine;
 run_genotypeGVCF_combined; run_genotypeGVCF; run_variant_clean_up} from './processes'
 
