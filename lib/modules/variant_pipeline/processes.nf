@@ -102,8 +102,8 @@ process run_variantCalling_bcftools {
         bcftools mpileup --gvcf 0 -Ou ${opt_m} -f ${ref} ${bam} | \
         bcftools call --gvcf 0 -Ou -m | \
         bcftools norm ${opt_n} -f ${ref} -Ou | \
-        bcftools sort --temp-dir \${PWD} -Ou | \
-        bcftools convert --gvcf --fasta-ref ${ref} -Oz -o ${id}.vcf.gz
+        bcftools convert --gvcf2vcf --fasta-ref ${ref} -Ou | \
+        bcftools sort --temp-dir \${PWD} -Oz -o ${id}.vcf.gz
 
         bcftools index ${id}.vcf.gz
         """
