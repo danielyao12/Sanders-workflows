@@ -73,7 +73,4 @@ workflow stacks_pipeline {
     run_populations(workflow,
                 run_gstacks.out.pop_path,
                 params.populations_args)
-    
-    // emit:
-    //     run_ustacks.out
 }
