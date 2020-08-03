@@ -21,7 +21,6 @@ Below are functionalities I wish to implement.
   * Time
   * Memory
   * CPUs
-* 
 
 ## Installation
 
