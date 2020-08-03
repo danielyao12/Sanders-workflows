@@ -7,11 +7,21 @@ the Sanders research group. The current workflows I am looking to implement are:
 * [x] Stacks (v2) pipeline
 * [x] CodeML
 * [x] Consensus calling
-* [x] Variant calling
 * [x] Transcriptome assembly pipeline
+* [x] Variant calling
 
 If there are any other analyses that you are interested in having as a workflow,
 create an issue or message me and I'll look into implementing it.
+
+## TODO:
+
+Below are functionalities I wish to implement.
+
+* Pipeline specific resource arguments
+  * Time
+  * Memory
+  * CPUs
+* 
 
 ## Installation
 
@@ -110,6 +120,11 @@ are aware of this, and have implemented a fix through their github version, but 
 doesn't help us.
 
 #### These steps are REQUIRED to be able to use the CodeML sub-workflow
+
+First, if you haven't already, visit the UofA Conda set up guide linked above
+to ensure your package and environment paths are configured correctly.
+
+Once you're confident that Conda has been configured correctly, run the following:
 
 ```{shell}
 module load Anaconda3
