@@ -24,27 +24,27 @@ Sub-workflow arguments: Instantiate and populate
 */
 
 // QC arguments
-qc_args = check_args_QC(checked_args['usr_args'])
+qc_args = check_args_QC(checked_args['usr_args'], checked_args['main_args'])
 checked_args['main_args'].putAll(qc_args)
 
 // Stacks arguments
-stacks_args = check_args_stacks(checked_args['usr_args'])
+stacks_args = check_args_stacks(checked_args['usr_args'], checked_args['main_args'])
 checked_args['main_args'].putAll(stacks_args)
 
 // CodeML arguments
-codeml_args = check_args_codeml(checked_args['usr_args'])
+codeml_args = check_args_codeml(checked_args['usr_args'], checked_args['main_args'])
 checked_args['main_args'].putAll(codeml_args)
 
 // Consensus arguments
-consensus_args = check_args_consensus(checked_args['usr_args'])
+consensus_args = check_args_consensus(checked_args['usr_args'], checked_args['main_args'])
 checked_args['main_args'].putAll(consensus_args)
 
 // Transcript arguments
-transcript_args = check_args_transcript(checked_args['usr_args'])
+transcript_args = check_args_transcript(checked_args['usr_args'], checked_args['main_args'])
 checked_args['main_args'].putAll(transcript_args)
 
 // Variant args
-variant_args = check_args_variant(checked_args['usr_args'])
+variant_args = check_args_variant(checked_args['usr_args'], checked_args['main_args'])
 checked_args['main_args'].putAll(variant_args)
 
 // Final arguments to use in pipeline
@@ -181,10 +181,10 @@ workflow {
     qc_pipeline(seqs,
                 final_args['sub_workflows'])
 
-    // Reassign seqs if trim has been specified
-    if(final_args['trim']){
-        qc_pipeline.out.set { seqs }
-    }
+    // Reassign seqs if trim has been specified - will come back to this functionality later
+    // if(final_args['trim']){
+    //     qc_pipeline.out.set { seqs }
+    // }
 
     // Run STACKS pipeline
     stacks_pipeline(seqs,
