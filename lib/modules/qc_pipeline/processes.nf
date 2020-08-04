@@ -4,6 +4,8 @@ process run_fastp {
 
     publishDir "${outdir}/fastp/${id}", mode: 'copy'
 
+    label 'fastp'
+
     input:
         tuple id, file(file_pair)
         val wf
