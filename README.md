@@ -17,10 +17,13 @@ create an issue or message me and I'll look into implementing it.
 
 Below are functionalities I wish to implement.
 
-* Pipeline specific resource arguments
-  * Time
-  * Memory
-  * CPUs
+* Deomgraphic history sub-workflows:
+  * PSMC/MSMC
+* HyPhy
+  * Alternative to CodeML
+* File checks:
+  * Stacks: Population maps contain `tab` spacing and not spaces
+  * Multiple: CSV files actually are comma separated
 
 ## Installation
 
