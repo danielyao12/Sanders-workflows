@@ -22,15 +22,22 @@ def help_message_main() {
             - varCall_pipeline: Call variants against reference genomes
             - transcript_pipeline: Assemble RNA-seq data into transcriptomes
 
-        Required arguments: main.nf
+        Required arguments:
         -profile <str>                    Which pipeline to run: slurm or standard
         -work-dir <pth>                   Pipelines temporary working directory
         --outdir <pth>                    Absolute path to output directory
         --lib_type <str>                  Single or paired end sequence data
         --seq_dir <str>                   Path to directory containing sequence files
         --seq_ext '<str>'                 Sequence file extension pattern in quotes
-        --threads <int>                   Number of worker threads
         --sub_workflows                   Which sub-workflows to run
+
+        Optional arguments:
+        --threads <int>                   Number of worker threads requested for all subworkflow processes (default: 2)
+        --memory <str>                    Amount of memory requested for all sub-workflow processes (default: 4.Gb)
+        --time                            Time requested for each sub-workflow process (default: 1.h)
+
+        NOTE: These resource arguments are the lowest priority. If you provide resource arguments to sub-workflows, they will be used over the values above.
+        When requesting resources, ensure you use the correct syntax for memory and time (shown in defaults above).
 
         SLURM profile:
         --email <str>                     Email address when '--profile slurm'
@@ -86,9 +93,14 @@ def help_message_qc() {
 
         Optional:
         --fastp_optional              Quoted string of custom parameters for fastp
+        --qc_threads                  Number of threads to pass to Fastp
+        --qc_memory                   Memory to request for Fastp/FastQC
+        --qc_time                     Time to request for Fastp/FastQC
 
-        NOTE: Arguments '--adapter_file' and '--detect_adapter' are mututally
-        exclusive. You can't pass both arguments. 
+        NOTE: 
+            - Arguments '--adapter_file' and '--detect_adapter' are mututally
+            exclusive. You can't pass both arguments.
+            - Optional resource parameters above will default to 'threads', 'memory' and 'time' values used by 'main.nf' if none are given.
 
         Similarly, if you provide '--trim' but neither of the other two arguments,
         the software will complain. 
@@ -130,6 +142,12 @@ def help_message_stacks() {
         --tsv2bam_args <str>                    Arguments to pass to tsv2bam in quotes
         --gstacks_args <str>                    Arguments to pass to gstacks in quotes
         --populations_args <str>                Arguments to pass to populations in quotes
+        --stacks_threads                        Number of threads requested for each of the Stacks sub-processes
+        --stacks_memory                         Memory to request for each of the Stacks sub-processes
+        --stacks_time                           Time to request for each of the Stacks sub-processes
+
+        NOTE:
+            - Optional resource parameters above will default to 'threads', 'memory' and 'time' values used by 'main.nf' if none are given.
 
         As each users run will be different, I've made it so you can provide arguments
         to stacks as a string. If no arguments are passed, the pipeline will run with
@@ -169,10 +187,14 @@ def help_message_codeml() {
         --leaves                            Agument specifying if every leaf should be marked
         --internals                         Agument specifying if every node should be marked
         --codeml_param <str>                Quoted string of extra parameters to pass to ETE-Evol
+        --codeml_threads                    Number of threads to request for CodeML processes
+        --codeml_memory                     Amount of memory to request for CodeML processes
+        --codeml_time                       Amount of time to request for CodeML processes
 
         NOTE:
             - By default a common default set of models and comparisons will be conducted
             - Select ONE of `--mark`, `--leaves` or `--internals` but never more than ONE
+            - Optional resource parameters above will default to 'threads', 'memory' and 'time' values used by 'main.nf' if none are given.
 
         Example command:
         nextflow run main.nf \\
@@ -206,6 +228,11 @@ def help_message_consensus() {
         --view_commands <str>               Quoted string of extra commands to pass to BCFtools view
         --consensus_commands <str>          Quoted string of extra commands to pass to BCFtools consensus
         --cleanup                           Keep only the consensus FASTA files (delete BAM and VCF files)
+        --consensus_memory                  Amount of memory requested for consensus processes
+        --consensus_time                    Amount of time requested for consensus processes
+
+        NOTE:
+            - Optional resource parameters above will default to 'threads', 'memory' and 'time' values used by 'main.nf' if none are given.
 
         Example command:
         nextflow run main.nf \\
@@ -230,6 +257,12 @@ def help_message_transcript() {
         --trinity_optional <str>            Quoted string of extra commands to pass to Trinity
         --run_cdhit
         --run_transdecoder
+        --transcript_threads                Number of threads requested for Trinity, CD-HIT and homology searches
+        --transcript_memory                 Amount of memory requested for CD-HIT and homology searches
+        --transcript_time                   Amount of time requested for CD-HIT and homology searches
+
+        NOTE:
+            - Optional resource parameters above will default to 'threads', 'memory' and 'time' values used by 'main.nf' if none are given.
 
         Example command:
         nextflow run main.nf \\
@@ -261,6 +294,12 @@ def help_message_variant() {
         --opt_genotypeGVCF <str>            Quoted string of optional commands to pass to GATKs GenotypeGVCF
         --opt_mpileup <str>                 Quoted string of optional commands to pass to BCFtools mpileup
         --opt_norm <str>                    Quoted string of optional commands to pass to BCFtools norm
+        --variant_threads                   Number of threads requested by GATK
+        --variant_memory                    Amount of memory requested by GATK and BCFtools processes
+        --variant_time                      Amount of memory requested by GATK and BCFtools processes
+
+        NOTE:
+            - Optional resource parameters above will default to 'threads', 'memory' and 'time' values used by 'main.nf' if none are given.
 
         Example command:
         nextflow run main.nf \\

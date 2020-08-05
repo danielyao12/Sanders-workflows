@@ -10,7 +10,7 @@ process run_index {
         val wf
 
     output:
-        tuple pth, file("${ref.baseName}*.{amb,ann,bwt,pac,sa,fai}"), val("${pth}/${ref}"), emit: refs
+        tuple pth, file("${ref.baseName}*.{amb,ann,64,32,pac,0123,fai}"), val("${pth}/${ref}"), emit: refs
 
     when:
         wf.contains('consensus_pipeline')
@@ -23,14 +23,14 @@ process run_index {
             samtools faidx ${ref}
         fi 
 
-        if [[ -f ${pth}/${ref}.bwt ]]; then
-            cp ${pth}/${ref}.bwt \${PWD}
+        if [[ -f ${pth}/${ref}.bwt.2bit.64 ]]; then
+            cp ${pth}/${ref}.bwt* \${PWD}
             cp ${pth}/${ref}.amb \${PWD}
             cp ${pth}/${ref}.ann \${PWD}
             cp ${pth}/${ref}.pac \${PWD}
-            cp ${pth}/${ref}.sa \${PWD}
+            cp ${pth}/${ref}.0123 \${PWD}
         else 
-            bwa index ${ref}
+            bwa-mem2 index ${ref}
         fi
         """
 }
@@ -49,7 +49,7 @@ process run_bwa {
         val wf
 
     output:
-        tuple path("*filtered.bam"), path("*filtered.bam.bai"), emit: bam
+        tuple id, file(seqs), file(ref), file(idx), path("*.bam"), path("*.bai"), emit: bam
         file "*.flagstat"
 
     when:
@@ -59,19 +59,12 @@ process run_bwa {
         def opt_args = opt ?: ''
 
         """
-        bwa mem ${opt_args} -t ${task.cpus} ${ref} ${seqs} | \
-        samtools sort -@ ${task.cpus} -O BAM -o ${id}.bam
+        bwa-mem2 mem -t ${task.cpus} ${ref} ${seqs} ${opt_args} | \
+        samtools sort -O BAM -o ${id}.bam
 
         samtools index -@ ${task.cpus} ${id}.bam
 
         samtools flagstat -@ ${task.cpus} ${id}.bam > ${id}.flagstat
-
-        samtools view -b -@ ${task.cpus} -F 4 ${id}.bam | \
-        samtools sort -O BAM -@ ${task.cpus} -o ${id}_filtered.bam
-
-        samtools index -@ ${task.cpus} ${id}_filtered.bam
-
-        samtools flagstat -@ ${task.cpus} ${id}_filtered.bam > ${id}_filtered.flagstat
         """        
 }
 
@@ -83,9 +76,8 @@ process run_consensus {
     label 'consensus'
 
     input:
-        tuple id, file(seqs), path(ref), file(idx)
+        tuple id, file(seqs), path(ref), file(idx), file(bam), file(bai)
         val outdir
-        tuple file(bam), file(bai)
         val mpileup
         val norm
         val filter

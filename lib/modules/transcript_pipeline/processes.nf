@@ -59,6 +59,8 @@ process run_cdhit {
 
     publishDir "${outdir}/cdhit", mode: 'copy'
 
+    label 'cdhit'
+
     input:
         tuple id, path(fastaFile)
         val outdir

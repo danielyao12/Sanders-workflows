@@ -53,9 +53,8 @@ workflow consensus_pipeline {
             workflow)
 
     // Generate consensus sequences
-    run_consensus(seqs,
+    run_consensus(run_bwa.out.bam,
                   params.outdir,
-                  run_bwa.out.bam,
                   params.mpileup_commands,
                   params.norm_commands,
                   params.filter_commands,

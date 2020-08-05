@@ -14,6 +14,8 @@ def empty_args_main_map() {
     args.seq_dir = false
     args.seq_ext = false
     args.threads = false
+    args.memory = false
+    args.time = false
     args.email = false
     args.sub_workflows = false
     args.submission_queue = false
@@ -36,6 +38,8 @@ def check_args_main(Map args) {
     final_args.lib_type = check_required_args_main(args, 'lib_type')
     final_args.seqs = seq_dir + '/' + seq_ext
     final_args.threads = check_required_args_main(args, 'threads')
+    final_args.memory = check_required_args_main(args, 'memory')
+    final_args.time = check_required_args_main(args, 'time')
     final_args.submission_queue = check_required_args_main(args, 'submission_queue')
     
     // Check email is provided if profile == slurm
@@ -74,17 +78,30 @@ def empty_args_QC_map() {
     args.failed_file = false
     args.fastp_optional = false
 
+    // Resource arguments
+    args.qc_threads = false
+    args.qc_memory = false
+    args.qc_time = false
+
     // Return map of empty arguments
     return args
 }
 
 // Return checked QC arguments
-def check_args_QC(Map args) {
+def check_args_QC(Map args, Map mainArgs) {
 
     // Instantiate
     qc_args = empty_args_QC_map()
 
-    // 
+    /*
+    Resource arguments: Default to 
+        A) General threads/memory/time provided to main.nf by user
+        B) Hardcoded defaults if above are not given (2 cpu/2.Gb/1.h)
+    */
+    qc_args.qc_threads = args.qc_threads ?: mainArgs.threads
+    qc_args.qc_memory = args.qc_memory ?: mainArgs.memory
+    qc_args.qc_time = args.qc_time ?: mainArgs.time
+
     if(args.trim) { // Trim the reads
 
         qc_args.trim = args.trim
@@ -130,14 +147,24 @@ def empty_args_stacks_map() {
     args.populations_args = false
     args.population_maps = false
 
+    // Resource arguments
+    args.stacks_threads = false
+    args.stacks_memory = false
+    args.stacks_time = false
+
     return args
     
 }
 
-def check_args_stacks(Map args) {
+def check_args_stacks(Map args, Map mainArgs) {
 
     // Instantiate
     stacks_args = empty_args_stacks_map()
+
+    // Resource arguments
+    stacks_args.stacks_threads = args.stacks_threads ?: mainArgs.threads
+    stacks_args.stacks_memory = args.stacks_memory ?: mainArgs.memory
+    stacks_args.stacks_time = args.stacks_time ?: mainArgs.time
 
     // Custom args as list
     def c_args = [ args.ustacks,
@@ -210,14 +237,24 @@ def empty_args_codeml_map() {
     args.codeml_param = false
     args.conda_env_path = false
 
+    // Resource arguments
+    args.codeml_threads = false
+    args.codeml_memory = false
+    args.codeml_time = false
+
     return args
     
 }
 
-def check_args_codeml(Map args) {
+def check_args_codeml(Map args, Map mainArgs) {
 
     // Initialise empty arguments
     codeml_args = empty_args_codeml_map()
+
+    // Resource arguments
+    codeml_args.codeml_threads = args.codeml_threads ?: mainArgs.threads
+    codeml_args.codeml_memory = args.codeml_memory ?: mainArgs.memory
+    codeml_args.codeml_time = args.codeml_time ?: mainArgs.time
 
     def trees = args.trees
 
@@ -241,25 +278,29 @@ def check_args_codeml(Map args) {
         'b_free', 'b_neut' 
         ]
 
-    // Pre-built conda path
-    if(args.conda_env_path) {
-        
-        try {
-            File file = new File(args.conda_env_path)
-            assert file.exists()
-        } catch(AssertionError e) {
-            println("ERROR: Pre-built conda environment for CodeML doesn't exist " + 
-            args.conda_env_path + "\nError message: " + e.getMessage())
-        }
-
-        codeml_args.conda_env_path = args.conda_env_path
-
-    }
-
     // CodeML pipeline is requested
     if(args.sub_workflows.contains('codeml_pipeline') ){
 
-        codeml_args.codeml_param = codeml_param ?: false
+        codeml_args.codeml_param = args.codeml_param ?: false
+
+        // Pre-built conda path
+        if(args.conda_env_path) {
+            
+            try {
+                File file = new File(args.conda_env_path)
+                assert file.exists()
+            } catch(AssertionError e) {
+                println("ERROR: Pre-built conda environment for CodeML doesn't exist " + 
+                args.conda_env_path + "\nError message: " + e.getMessage())
+                System.exit(1)
+            }
+    
+            codeml_args.conda_env_path = args.conda_env_path
+    
+        } else {
+            println("ERROR: No supplied argument to '--conda_env_path'")
+            System.exit(1)
+        }
         
         // Have tree files been provided
         if(!trees){
@@ -366,13 +407,21 @@ def empty_args_consensus_map() {
     args.consensus_commands = false
     args.cleanup = false
 
+    // Resource arguments
+    args.consensus_memory = false
+    args.consensus_time = false
+
     return args
     
 }
 
-def check_args_consensus(Map args) {
+def check_args_consensus(Map args, Map mainArgs) {
     // Initialise empty arguments
     consensus_args = empty_args_consensus_map()
+
+    // Resource specification
+    consensus_args.consensus_memory = args.consensus_memory ?: mainArgs.memory
+    consensus_args.consensus_time = args.consensus_time ?: mainArgs.time
     
     // Define references
     def ref = args.reference
@@ -463,14 +512,23 @@ def empty_args_transcript_map() {
     args.run_cdhit = false
     args.run_transdecoder = false
 
+    // Resource arguments
+    args.transcript_threads = false
+    args.transcript_memory = false
+    args.transcript_time = false
+
     return args
     
 }
 
-def check_args_transcript(Map args) {
+def check_args_transcript(Map args, Map mainArgs) {
 
     // Initialise empty arguments
     transcript_args = empty_args_transcript_map()
+
+    transcript_args.transcript_threads = args.transcript_threads ?: mainArgs.threads
+    transcript_args.transcript_memory = args.transcript_memory ?: mainArgs.memory
+    transcript_args.transcript_time = args.transcript_time ?: mainArgs.time
 
     def c_args = [
         args.trinity_optional,
@@ -508,12 +566,22 @@ def empty_args_variant_map() {
     args.opt_mpileup = false
     args.opt_norm = false
 
+    // Resource arguments
+    args.variant_threads = false
+    args.variant_memory = false
+    args.variant_time = false
+
     return args
 }
 
-def check_args_variant(Map args) {
+def check_args_variant(Map args, Map mainArgs) {
 
     variant_args = empty_args_variant_map()
+
+    // Resource arguments
+    variant_args.variant_threads = args.variant_threads ?: mainArgs.threads
+    variant_args.variant_memory = args.variant_memory ?: mainArgs.memory
+    variant_args.variant_time = args.variant_time ?: mainArgs.time
 
     def c_args = [
         args.ref,

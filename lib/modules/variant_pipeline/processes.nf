@@ -65,7 +65,7 @@ process run_bwa {
         def opt_args = opt ?: ''
 
         """
-        bwa-mem2 mem ${opt_args} -t ${task.cpus} ${ref} ${seqs} | \
+        bwa-mem2 mem ${opt_args} -R '@RG\\tID:${id}\\tSM:${id}\\tLB:genomic\\tPL:illumina\\tPU:UNKNOWN' -t ${task.cpus} ${ref} ${seqs} | \
         samtools sort -O BAM -o ${id}.bam
 
         samtools index -@ ${task.cpus} ${id}.bam

@@ -45,9 +45,12 @@ def help_or_version(Map args, String version){
 // Check the passed arguments are 
 def check_required_args_main(Map args, String args_name){
     if ( !args[args_name] ){
-
         if(args_name == 'threads') {
-            return 2
+            return 2 as int
+        } else if(args_name == 'memory') {
+            return 4.Gb as nextflow.util.MemoryUnit
+        } else if(args_name == 'time') {
+            return 1.h as nextflow.util.Duration
         } else if(args_name == 'submission_queue') {
             return 'cpu'
         } else {
@@ -87,31 +90,35 @@ def check_subWorkflow_selection(String workflows) {
 def print_subWorkflow_args(List workflow, Map args) {
 
     // Default arguments
-    default_keys = ['outdir', 'lib_type', 'seqs', 'threads', 
+    default_keys = ['outdir', 'lib_type', 'seqs', 'threads', 'memory', 'time', 
                     'sub_workflows', 'submission_queue', 'email']
 
     // QC arguments
     qc_keys = ['trim', 'detect_adapter', 'adapter_file', 'fastp_optional',
-               'unpaired_file', 'failed_file']
+               'unpaired_file', 'failed_file', 'qc_threads', 'qc_memory', 'qc_time']
     
     // Stacks arguments
     stacks_keys = ['population_maps', 'ustacks_args', 'cstacks_args', 'sstacks_args', 
-                   'tsv2bam_args', 'gstacks_args', 'populations_args']
+                   'tsv2bam_args', 'gstacks_args', 'populations_args', 'stacks_threads',
+                   'stacks_memory', 'stacks_time']
 
     // CodeML arguments
     codeml_keys = ['trees', 'conda_env_path', 'models', 'tests',
-                   'mark', 'leaves', 'internals', 'codeml_param']
+                   'mark', 'leaves', 'internals', 'codeml_param',
+                   'codeml_threads', 'codeml_memory', 'codeml_time']
 
     //Consensus arguments
     consensus_keys = ['reference', 'aligner_commands', 'mpileup_commands', 'norm_commands',
-                      'filter_commands', 'view_commands', 'consensus_commands']
+                      'filter_commands', 'view_commands', 'consensus_commands',
+                      'consensus_memory', 'consensus_time']
 
-    transcript_keys = [ 'trinity_optional', 'run_cdhit', 'run_transdecoder' ]
+    transcript_keys = [ 'trinity_optional', 'run_cdhit', 'run_transdecoder',
+                        'transcript_threads', 'transcript_memory', 'transcript_time']
 
     variant_keys = ['ref', 'caller', 'opt_bwa',
                     'opt_haplotypeCaller', 'opt_combineGVCF', 
                     'opt_genotypeGVCF', 'opt_mpileup', 'opt_norm', 
-                    'tidy', 'merge']
+                    'tidy', 'merge', 'variant_threads', 'variant_memory', 'variant_time']
 
     def args_map = [ qc_pipeline: qc_keys, 
                      stacks_pipeline: stacks_keys, 

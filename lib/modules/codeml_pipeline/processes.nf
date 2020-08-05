@@ -40,6 +40,6 @@ process run_codeml {
         -o \${PWD} \
         ${models} ${tests} ${mark} ${leaves} ${internals} ${opt_args}
 
-        cp .command.out > results_codeml.txt
+        cp .command.out results_codeml.txt
         """        
 }
