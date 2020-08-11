@@ -4,7 +4,7 @@ This repository contains `Nextflow` implementations of common workflows used by
 the Sanders research group. The current workflows I am looking to implement are:
 
 * [x] QC pipeline
-* [x] Stacks (v2) pipeline
+* [x] Stacks 2 pipeline
 * [x] CodeML
 * [x] Consensus calling
 * [x] Transcriptome assembly pipeline
@@ -32,7 +32,6 @@ Below are the install instructions for
 - Nextflow
 - Sanders-workflow pipeline
 - Conda setup
-- CodeML specific set up
 
 ### Nextflow install
 Use the following command to install the Nextflow executable to **your** Phoenix
@@ -114,59 +113,6 @@ channels:
 ```
 
 If this information is there, then you are good to go.
-
-## CodeML specific set up
-
-Unfortunately the `ete-evol` conda installation doesn't actually work. The developers
-are aware of this, and have implemented a fix through their github version, but this
-doesn't help us.
-
-#### These steps are REQUIRED to be able to use the CodeML sub-workflow
-
-First, if you haven't already, visit the UofA Conda set up guide linked above
-to ensure your package and environment paths are configured correctly.
-
-Once you're confident that Conda has been configured correctly, run the following:
-
-```{shell}
-module load Anaconda3
-
-## Create pipelines directory if it doesn't already exist
-mkdir -pv $FASTDIR/pipelines
-
-## Create conda environment with specified prefix path
-conda create --prefix=$FASTDIR/pipelines/ETE_env -c etetoolkit ete3 ete_toolchain python numpy PyQt lxml
-
-## Install GitHub version of Ete-Evol
-cd $FASTDIR/pipelines
-git clone https://github.com/etetoolkit/ete.git
-
-## Change into the software directory
-cd ete
-
-## Activate the conda environment
-conda activate $FASTDIR/pipelines/ETE_env
-
-## Run the install script
-python setup.py install
-
-## Check the installation
-ete3 build check
-
-## Deactivate the environment
-conda deactivate
-```
-
-If the `ete3 build check` command comes back with `OK` for everything then the install
-was successful.
-
-The path `$FASTDIR/pipelines/ETE_env` will be a required argument to the `codeml_pipeline`
-sub-workflow. This pipeline will use this conda environment to carry out the analyses
-rather than downloading the software on the fly, which is how every other sub-workflow
-operates.
-
-This is less than ideal, but I have created an issue with the developers of `Ete` and will
-hopefully hear back soon.
 
 ## Pipeline specifics
 
