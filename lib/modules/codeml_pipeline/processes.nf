@@ -1,3 +1,22 @@
+process setup_ete {
+    tag { 'Installing ETE-EVOL' }
+
+    input:
+        val wf
+    
+    when:
+        wf.contains('codeml_pipeline')
+    
+    script:
+        """
+        mkdir -p \${FASTDIR}/pipelines
+        cd \${FASTDIR}/pipelines
+        git clone https://github.com/etetoolkit/ete.git
+        cd ete
+        python setup.py install
+        """
+}
+
 process run_codeml {
     tag { id }
 
@@ -6,6 +25,7 @@ process run_codeml {
     label 'codeml'
 
     input:
+        val setup
         tuple id, file(seqs), tree, mark
         val outdir
         val models

@@ -235,7 +235,6 @@ def empty_args_codeml_map() {
     args.leaves = false
     args.internals = false
     args.codeml_param = false
-    args.conda_env_path = false
 
     // Resource arguments
     args.codeml_threads = false
@@ -282,25 +281,6 @@ def check_args_codeml(Map args, Map mainArgs) {
     if(args.sub_workflows.contains('codeml_pipeline') ){
 
         codeml_args.codeml_param = args.codeml_param ?: false
-
-        // Pre-built conda path
-        if(args.conda_env_path) {
-            
-            try {
-                File file = new File(args.conda_env_path)
-                assert file.exists()
-            } catch(AssertionError e) {
-                println("ERROR: Pre-built conda environment for CodeML doesn't exist " + 
-                args.conda_env_path + "\nError message: " + e.getMessage())
-                System.exit(1)
-            }
-    
-            codeml_args.conda_env_path = args.conda_env_path
-    
-        } else {
-            println("ERROR: No supplied argument to '--conda_env_path'")
-            System.exit(1)
-        }
         
         // Have tree files been provided
         if(!trees){
