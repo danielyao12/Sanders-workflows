@@ -18,9 +18,10 @@ create an issue or message me and I'll look into implementing it.
 Below are functionalities I wish to implement.
 
 * Deomgraphic history sub-workflows:
-  * PSMC/MSMC
+  * PSMC
+  * MSMC
 * HyPhy
-  * Alternative to CodeML
+  * (Better) alternative to CodeML
 * File checks:
   * Stacks: Population maps contain `tab` spacing and not spaces
   * Multiple: CSV files actually are comma separated
