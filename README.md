@@ -3,12 +3,12 @@
 This repository contains `Nextflow` implementations of common workflows used by
 the Sanders research group. The current workflows I am looking to implement are:
 
-* [x] QC pipeline
-* [x] Stacks 2 pipeline
-* [x] CodeML
-* [x] Consensus calling
-* [x] Transcriptome assembly pipeline
-* [x] Variant calling
+* [x] [QC pipeline](https://github.com/a-lud/Sanders-workflows/wiki/QC-Pipeline)
+* [x] [Stacks 2 pipeline](https://github.com/a-lud/Sanders-workflows/wiki/Stacks-pipeline)
+* [x] [CodeML](https://github.com/a-lud/Sanders-workflows/wiki/CodeML-pipeline)
+* [x] [Consensus calling](https://github.com/a-lud/Sanders-workflows/wiki/Consensus-calling)
+* [x] [Transcriptome assembly pipeline](https://github.com/a-lud/Sanders-workflows/wiki/Transcript-assembly-pipeline)
+* [x] [Variant calling](https://github.com/a-lud/Sanders-workflows/wiki/Variant-calling-pipeline)
 
 If there are any other analyses that you are interested in having as a workflow,
 create an issue or message me and I'll look into implementing it.
