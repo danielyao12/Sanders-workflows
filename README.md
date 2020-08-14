@@ -24,7 +24,7 @@ Below are functionalities I wish to implement.
   * Align peptide
   * Convert peptide alignment to nucleotide sequence
   * Clean alignments
-    * HmmClean/PRESEQ/Gblocks/GUIDANCE2
+    * HmmClean/PREQUAL/Gblocks/GUIDANCE2
 * HyPhy
   * (Better) alternative to CodeML
 * File checks:
