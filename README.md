@@ -20,6 +20,11 @@ Below are functionalities I wish to implement.
 * Deomgraphic history sub-workflows:
   * PSMC
   * MSMC
+* MSA pipeline
+  * Align peptide
+  * Convert peptide alignment to nucleotide sequence
+  * Clean alignments
+    * HmmClean/PRESEQ/Gblocks/GUIDANCE2
 * HyPhy
   * (Better) alternative to CodeML
 * File checks:
